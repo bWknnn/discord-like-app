@@ -1,7 +1,7 @@
 package com.discord_like_app.server.controller;
 
 import com.discord_like_app.server.model.Message;
-import com.discord_like_app.server.repository.MessageRepository;
+import com.discord_like_app.server.service.MessageService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,20 +9,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {
-    private final MessageRepository repo;
 
-    public MessageController(MessageRepository repo) {
-        this.repo = repo;
+    private final MessageService messageService;
+
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
     }
 
     @GetMapping
-    public List<Message> getAllMessages(){
-        return repo.findAll();
+    public List<Message> getAllMessages() {
+        return messageService.getAllMessages();
     }
 
     @PostMapping
-    public Message createMessage(@RequestBody Message message){
-        message.setCreatedAt(java.time.LocalDateTime.now());
-        return repo.save(message);
+    public Message createMessage(@RequestBody Message message) {
+        return messageService.createMessage(message);
     }
 }

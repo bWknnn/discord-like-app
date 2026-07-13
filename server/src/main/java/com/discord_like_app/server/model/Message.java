@@ -16,5 +16,6 @@ public class Message {
     private long id;
     private String content;
     private String author;
+    private String channelId;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
