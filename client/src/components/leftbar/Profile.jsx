@@ -1,4 +1,4 @@
-import Friend from "../friendlist/Friend";
+import Friend from "../friendlist/Server";
 
 export default function Profile() {
   return (

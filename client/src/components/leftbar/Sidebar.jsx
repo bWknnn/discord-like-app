@@ -1,4 +1,4 @@
-import Friendlist from "../friendlist/Friendlist";
+import Serverlist from "../friendlist/Serverlist";
 import Profile from "./Profile";
 import Topnav from "./Topnav";
 
@@ -7,7 +7,7 @@ export default function Sidebar() {
     <>
       <div className="fcenter flex-col bg-left w-1/7 gap-2 pb-2 pt-2">
         <Topnav />
-        <Friendlist />
+        <Serverlist />
         <Profile />
       </div>
     </>

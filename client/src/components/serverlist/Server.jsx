@@ -1,6 +1,6 @@
 import profileIcon from "../../assets/pp.ico";
 
-export default function Friend({ name, customClass }) {
+export default function Server({ name, customClass }) {
   return (
     <>
       <div className={`${customClass}`}>

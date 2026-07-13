@@ -1,10 +1,10 @@
-import Friend from "../friendlist/Friend";
+import Server from "../friendlist/Server";
 
 export default function Log() {
   return (
     <div className="flex-1 h-screen bg-[#313338] flex flex-col">
       <div className="h-16 border-b-2 border-black flex items-center px-6">
-        <Friend name="Ahmet" customClass="profile" />
+        <Server name="Ahmet" customClass="profile" />
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
