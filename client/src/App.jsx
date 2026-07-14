@@ -1,12 +1,12 @@
-import Text from "./components/chat/Text";
-import Sidebar from "./components/leftbar/Sidebar";
+import Mainpage from "./components/mainpage/Mainpage";
+import RegisterForm from "./components/register/RegisterForm";
 
 function App() {
   return (
-    <div className="h-screen w-full flex">
-      <Sidebar />
-      <Text />
-    </div>
+    <>
+      <RegisterForm />
+      {/* <Mainpage /> */}
+    </>
   );
 }
 

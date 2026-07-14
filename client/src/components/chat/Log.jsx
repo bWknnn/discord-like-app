@@ -1,4 +1,4 @@
-import Server from "../friendlist/Server";
+import Server from "../serverlist/Server";
 
 export default function Log() {
   return (

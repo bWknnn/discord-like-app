@@ -1,4 +1,4 @@
-import Serverlist from "../friendlist/Serverlist";
+import Serverlist from "../serverlist/Serverlist";
 import Profile from "./Profile";
 import Topnav from "./Topnav";
 
