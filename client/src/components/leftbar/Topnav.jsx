@@ -2,7 +2,7 @@ export default function Topnav() {
   return (
     <>
       <div className="flex flex-col plane gap-2  flex-1/12">
-        <p className="border-left border-2 rounded-2xl hover:bg-left cursor-pointer text-center">
+        <p className="border-bg-card border-2 rounded-2xl hover:bg-bg-card cursor-pointer text-center text-accent-hover">
           Add Server
         </p>
         <input
@@ -11,7 +11,7 @@ export default function Topnav() {
           id="search"
           placeholder="Search for a server"
           autoComplete="off"
-          className="p-2 border-left border-2 rounded-2xl leading-0.5 outline-none "
+          className="p-2 border-bg-card border-2 rounded-2xl leading-0.5 outline-none text-neutral-600 "
         />
       </div>
     </>

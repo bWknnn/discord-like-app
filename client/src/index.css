@@ -12,6 +12,25 @@
 }
 
 @theme {
+  /* Arka Planlar */
+  --color-bg-main: #121116;
+  --color-bg-card: #1c1b22;
+  --color-bg-header: #18171d;
+
+  /* Sınır Çizgileri */
+  --color-border-dark: #302e38;
+
+  /* Metinler */
+  --color-text-light: #f1efe9;
+
+  /* Vurgu & Buton Renkleri (Terminal Yeşili) */
+  --color-accent: #c6ff3d;
+  --color-accent-hover: #d4ff66;
+
+  /* Yeni Link Renkleri */
+  --color-link: #4ade80; /* Yumuşak bir yeşil-mavi tonu */
+  --color-link-hover: #6ee7b7; /* Üzerine gelince parlayan daha açık hali */
+
   --color-left: #4e4d4f;
   --color-topnav: #5f5e60;
   --color-back: #414142;
@@ -22,13 +41,13 @@
 }
 
 @utility plane {
-  @apply bg-topnav w-12/13 p-2 rounded-[5px];
+  @apply bg-border-dark w-12/13 p-2 rounded-[5px];
 }
 
-@utility friend {
-  @apply border-2 fcenter p-1 rounded-2xl border-left gap-1 hover:bg-left cursor-pointer;
+@utility server {
+  @apply border-2 fcenter p-1 rounded-2xl border-bg-card gap-1 hover:bg-bg-card cursor-pointer;
 }
 
 @utility profile {
-  @apply fcenter p-1 gap-1 cursor-pointer hover:bg-left rounded-2xl;
+  @apply fcenter p-1 gap-1 cursor-pointer hover:bg-bg-card rounded-2xl;
 }

@@ -1,11 +1,11 @@
-import Friend from "../serverlist/Server";
+import Profile from "../profile/Profile";
 
-export default function Profile() {
+export default function User() {
   return (
     <>
       <div className="flex-1/12 plane">
         <div>
-          <Friend name="bWkn" customClass="profile" />
+          <Profile name="bWkn" customClass="profile" />
         </div>
         <div>Settings</div>
       </div>

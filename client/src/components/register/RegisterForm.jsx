@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { registerUser } from "../../api/users";
+import { registerUser, loginUser } from "../../api/users";
+import { useNavigate } from "react-router";
 
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
+  const [type, setType] = useState("Sign In");
+  const navigate = useNavigate();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -20,41 +23,51 @@ export default function RegisterForm() {
     }
   }
 
+  async function handleLogin(event) {
+    event.preventDefault();
+    try {
+      const user = await loginUser(email, password);
+      navigate("/main");
+      console.log(user);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#121116] px-4">
-      <div className="w-full max-w-sm rounded-lg border border-[#302E38] bg-[#1C1B22] shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-[#302E38] bg-[#18171D]">
-          <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-          <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
-          <span className="w-3 h-3 rounded-full bg-[#28C840]" />
-          <span className="ml-2 font-mono text-xs text-[#8B8894]">
-            register.sh
-          </span>
+    <div className="min-h-screen flex items-center justify-center bg-bg-main px-4">
+      <div className="w-full max-w-sm rounded-lg border border-border-dark bg-bg-card shadow-2xl overflow-hidden">
+        <div className="flex justify-center gap-2 px-4 py-3 border-b border-border-dark bg-bg-header">
+          <span className="text-accent font-mono">{type}</span>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
-          <div>
-            <label
-              htmlFor="username"
-              className="block font-mono text-xs text-[#C6FF3D] mb-1.5"
-            >
-              &gt; username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-[#302E38] text-[#F1EFE9] py-1.5
-                         focus:outline-none focus:border-[#C6FF3D] transition-colors"
-              placeholder="username"
-            />
-          </div>
+          {type === "Sign Up" ? (
+            <div>
+              <label
+                htmlFor="username"
+                className="block font-mono text-xs text-accent mb-1.5"
+              >
+                &gt; username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
+                         focus:outline-none focus:border-accent transition-colors"
+                placeholder="username"
+              />
+            </div>
+          ) : (
+            ""
+          )}
 
           <div>
             <label
               htmlFor="email"
-              className="block font-mono text-xs text-[#C6FF3D] mb-1.5"
+              className="block font-mono text-xs text-accent mb-1.5"
             >
               &gt; email
             </label>
@@ -63,8 +76,8 @@ export default function RegisterForm() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-[#302E38] text-[#F1EFE9] py-1.5
-                         focus:outline-none focus:border-[#C6FF3D] transition-colors"
+              className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
+                         focus:outline-none focus:border-accent transition-colors"
               placeholder="you@example.com"
             />
           </div>
@@ -72,7 +85,7 @@ export default function RegisterForm() {
           <div>
             <label
               htmlFor="password"
-              className="block font-mono text-xs text-[#C6FF3D] mb-1.5"
+              className="block font-mono text-xs text-accent mb-1.5"
             >
               &gt; password
             </label>
@@ -81,22 +94,54 @@ export default function RegisterForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-[#302E38] text-[#F1EFE9] py-1.5
-                         focus:outline-none focus:border-[#C6FF3D] transition-colors"
+              className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
+                         focus:outline-none focus:border-accent transition-colors"
               placeholder="••••••••"
             />
           </div>
 
-          <button
-            type="submit"
-            className="mt-2 font-mono text-sm bg-[#C6FF3D] text-[#121116] font-semibold py-2.5 rounded
-                       hover:bg-[#D4FF66] transition-colors cursor-pointer"
-          >
-            run register()
-          </button>
+          {type === "Sign Up" ? (
+            <button
+              type="submit"
+              className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
+                       hover:bg-accent-hover transition-colors cursor-pointer"
+            >
+              Sign Up
+            </button>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
+                       hover:bg-accent-hover transition-colors cursor-pointer"
+            >
+              Sign In
+            </button>
+          )}
 
-          {success && (
-            <p className="font-mono text-xs text-[#C6FF3D]">
+          {type === "Sign Up" ? (
+            <p className="font-light tracking-wider text-neutral-400 font-mono text-xs select-none">
+              Have an account?
+              <span
+                onClick={() => setType("Sign In")}
+                className="text-accent hover:text-accent-hover cursor-pointer transition-colors ml-1"
+              >
+                Sign In
+              </span>
+            </p>
+          ) : (
+            <p className="font-light tracking-wider text-neutral-400 font-mono text-xs select-none">
+              Create an account?
+              <span
+                onClick={() => setType("Sign Up")}
+                className="text-accent hover:text-accent-hover cursor-pointer transition-colors ml-1"
+              >
+                Sign Up
+              </span>
+            </p>
+          )}
+
+          {type === "Sign Up" && success && (
+            <p className="font-mono text-xs text-accent">
               ✓ user created successfully
             </p>
           )}
