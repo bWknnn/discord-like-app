@@ -1,11 +1,10 @@
-import Text from "../chat/Text";
-import Sidebar from "../leftbar/Sidebar";
+import { useState } from "react";
+import ServerList from "../server/ServerList";
 
-export default function Mainpage() {
+export default function MainPage() {
   return (
-    <div className="h-screen w-full flex">
-      <Sidebar />
-      <Text />
+    <div className="bg-bg-main h-screen">
+      <ServerList />
     </div>
   );
 }

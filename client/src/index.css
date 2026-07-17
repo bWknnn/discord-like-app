@@ -28,26 +28,11 @@
   --color-accent-hover: #d4ff66;
 
   /* Yeni Link Renkleri */
-  --color-link: #4ade80; /* Yumuşak bir yeşil-mavi tonu */
-  --color-link-hover: #6ee7b7; /* Üzerine gelince parlayan daha açık hali */
+  --color-link: #22c55e; /* 1 tık koyulaştırılmış yeşil (Tailwind green-500) */
+  --color-link-hover: #4ade80; /* Üzerine gelince parlayan hali (eski ana rengin, Tailwind green-400) */
 
-  --color-left: #4e4d4f;
-  --color-topnav: #5f5e60;
-  --color-back: #414142;
-}
-
-@utility fcenter {
-  @apply flex justify-center items-center;
-}
-
-@utility plane {
-  @apply bg-border-dark w-12/13 p-2 rounded-[5px];
-}
-
-@utility server {
-  @apply border-2 fcenter p-1 rounded-2xl border-bg-card gap-1 hover:bg-bg-card cursor-pointer;
-}
-
-@utility profile {
-  @apply fcenter p-1 gap-1 cursor-pointer hover:bg-bg-card rounded-2xl;
+  --color-avatar-bg: #2a2933;
+  --color-online: #4ade80;
+  --color-badge: #ff5d5d;
+  --color-badge-text: #4a1010;
 }

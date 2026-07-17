@@ -27,8 +27,8 @@ export default function RegisterForm() {
     event.preventDefault();
     try {
       const user = await loginUser(email, password);
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/main");
-      console.log(user);
     } catch (err) {
       console.log(err);
     }
