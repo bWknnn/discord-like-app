@@ -36,3 +36,20 @@
   --color-badge: #ff5d5d;
   --color-badge-text: #4a1010;
 }
+
+@utility add-button {
+  @apply font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
+                       hover:bg-accent-hover transition-colors cursor-pointer
+                       flex items-center justify-center gap-1.5;
+}
+
+@utility create-button {
+  @apply font-mono text-sm bg-link text-bg-main font-semibold py-2.5 rounded
+                       hover:bg-link-hover transition-colors cursor-pointer
+                       flex items-center justify-center gap-1.5 my-auto;
+}
+
+@utility input {
+  @apply w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
+                         focus:outline-none focus:border-accent transition-colors;
+}

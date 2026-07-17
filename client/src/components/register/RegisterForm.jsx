@@ -55,8 +55,7 @@ export default function RegisterForm() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
-                         focus:outline-none focus:border-accent transition-colors"
+                className="input"
                 placeholder="username"
               />
             </div>
@@ -76,8 +75,7 @@ export default function RegisterForm() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
-                         focus:outline-none focus:border-accent transition-colors"
+              className="input"
               placeholder="you@example.com"
             />
           </div>
@@ -94,8 +92,7 @@ export default function RegisterForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
-                         focus:outline-none focus:border-accent transition-colors"
+              className="input"
               placeholder="••••••••"
             />
           </div>

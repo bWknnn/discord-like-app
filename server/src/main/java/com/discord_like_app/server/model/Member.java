@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private long userId;
-    private long serverId;
+    private Long id;
+    private Long userId;
+    private Long serverId;
 }

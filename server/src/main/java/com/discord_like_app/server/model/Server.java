@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String serverName;
     private String owner;
 }

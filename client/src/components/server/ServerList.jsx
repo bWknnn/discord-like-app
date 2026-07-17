@@ -3,12 +3,14 @@ import {
   FiPlus,
   FiSearch,
   FiChevronRight,
+  FiChevronDown,
   FiSettings,
   FiPlusCircle,
   FiLogOut,
 } from "react-icons/fi";
 import Server from "./Server";
 import { useNavigate } from "react-router";
+import { createServer, getServers } from "../../api/servers";
 
 const servers = [
   "Lol",
@@ -26,15 +28,42 @@ const servers = [
 ];
 
 export default function ServerList() {
-  const [active, setActive] = useState("");
-  const [open, setOpen] = useState(true);
-  const [create, setCreate] = useState(false);
-  const [serverName, setServerName] = useState("");
-  const [user, setUser] = useState(null);
+  const [active, setActive] = useState(""); // hangi server seçili
+  const [open, setOpen] = useState(true); // yandaki serverları gözüküyor mu
+  const [create, setCreate] = useState(false); // server oluşturma penceresi
+  const [add, setAdd] = useState(false); // sunucu ekleme penceresi
+  const [serverName, setServerName] = useState(""); // create serverdaki servername
+  const [user, setUser] = useState(null); // kullanıcı
+  const [join, setJoin] = useState([]); // katılabilinir serverlar
 
   function logout() {
     localStorage.clear();
     navigate("/");
+  }
+
+  async function serverCreate() {
+    if (!serverName || serverName.trim() === "") {
+      alert("Lütfen bir sunucu adı girin.");
+      return;
+    }
+    try {
+      await createServer(serverName.trim(), user?.userName);
+      setServerName("");
+      setCreate(false);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getAllServers() {
+    try {
+      const servers = await getServers();
+      setAdd(true);
+      console.log(servers);
+      setJoin(servers);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const navigate = useNavigate();
@@ -80,15 +109,10 @@ export default function ServerList() {
               type="text"
               value={serverName}
               onChange={(e) => setServerName(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
-                         focus:outline-none focus:border-accent transition-colors"
+              className="input mt-2"
               placeholder="Server Name"
             />
-            <button
-              className="font-mono text-sm bg-link text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-link-hover transition-colors cursor-pointer
-                       flex items-center justify-center gap-1.5 my-auto"
-            >
+            <button className="create-button" onClick={serverCreate}>
               <FiPlusCircle size={16} />
               Create Server
             </button>
@@ -96,22 +120,46 @@ export default function ServerList() {
         </div>
       )}
 
+      {add && (
+        <div
+          onClick={() => setAdd(false)}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col"
+          >
+            <label
+              htmlFor="servername"
+              className="font-mono text-xs text-accent mb-1.5 flex items-center gap-1.5"
+            >
+              <FiChevronDown />
+              Avaible Servers
+            </label>
+            <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-80 w-full">
+              {join.map((j) => (
+                <div key={j.id} className="relative flex items-center group">
+                  <Server
+                    key={j.id}
+                    name={j.serverName}
+                    active={false === active}
+                    onClick={() => alert(j.id)}
+                  />
+                  <FiPlus className="absolute right-4 pointer-events-none text-text-light/60 group-hover:text-accent transition-colors duration-150" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-bg-card flex flex-col w-fit px-4 h-full gap-1 border-r border-border-dark rounded-md">
         <header className="flex flex-col gap-2 bg-bg-card p-2 rounded-md">
-          <button
-            onClick={() => setCreate(true)}
-            className="font-mono text-sm bg-link text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-link-hover transition-colors cursor-pointer
-                       flex items-center justify-center gap-1.5"
-          >
+          <button className="create-button" onClick={() => setCreate(true)}>
             <FiPlusCircle size={16} />
             Create Server
           </button>
-          <button
-            className="font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-accent-hover transition-colors cursor-pointer
-                       flex items-center justify-center gap-1.5"
-          >
+          <button className="add-button" onClick={getAllServers}>
             <FiPlus size={16} />
             Add Server
           </button>
@@ -126,8 +174,7 @@ export default function ServerList() {
               type="text"
               name="search"
               id="search"
-              className="w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5 pl-6
-                           focus:outline-none focus:border-accent transition-colors"
+              className="input pl-5"
             />
           </div>
         </header>

@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class Channel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private long serverId;
+    private Long id;
+    private Long serverId;
     private String name;
     private String type;
 
