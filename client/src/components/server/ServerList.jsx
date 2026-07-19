@@ -10,63 +10,77 @@ import {
 } from "react-icons/fi";
 import Server from "./Server";
 import { useNavigate } from "react-router";
-import { createServer, getServers } from "../../api/servers";
-
-const servers = [
-  "Lol",
-  "Mc",
-  "Roblox",
-  "Your Server",
-  "Lol",
-  "Mc",
-  "Roblox",
-  "Your Server",
-  "Lol",
-  "Mc",
-  "Roblox",
-  "Your Server",
-];
+import {
+  addMember,
+  createServer,
+  getJoinedServers,
+  getJoinableServers,
+} from "../../api/servers";
 
 export default function ServerList() {
-  const [active, setActive] = useState(""); // hangi server seçili
-  const [open, setOpen] = useState(true); // yandaki serverları gözüküyor mu
-  const [create, setCreate] = useState(false); // server oluşturma penceresi
-  const [add, setAdd] = useState(false); // sunucu ekleme penceresi
-  const [serverName, setServerName] = useState(""); // create serverdaki servername
-  const [user, setUser] = useState(null); // kullanıcı
-  const [join, setJoin] = useState([]); // katılabilinir serverlar
+  const [active, setActive] = useState(""); // which server is selected
+  const [open, setOpen] = useState(true); // is server list shown
+  const [create, setCreate] = useState(false); // server creation tab
+  const [add, setAdd] = useState(false); // server addition tab
+  const [serverName, setServerName] = useState(""); // servername in createserver
+  const [user, setUser] = useState(null); // user
+  const [joinable, setJoinable] = useState([]); // joinable servers
+  const [joined, setJoined] = useState([]); // joined servers
+
+  const navigate = useNavigate();
 
   function logout() {
     localStorage.clear();
     navigate("/");
   }
 
+  async function fetchJoinedServers(userId) {
+    try {
+      const data = await getJoinedServers(userId);
+      setJoined(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async function serverCreate() {
     if (!serverName || serverName.trim() === "") {
-      alert("Lütfen bir sunucu adı girin.");
+      alert("Enter a server name.");
       return;
     }
     try {
-      await createServer(serverName.trim(), user?.userName);
+      const server = await createServer(serverName.trim(), user?.userName);
+      await addMember(user.uid, server.uid);
+
       setServerName("");
       setCreate(false);
+
+      await fetchJoinedServers(user.uid);
     } catch (err) {
       console.log(err);
     }
   }
 
   async function getAllServers() {
+    if (!user?.uid) return;
     try {
-      const servers = await getServers();
+      const serversData = await getJoinableServers(user.uid);
+      setJoinable(serversData);
       setAdd(true);
-      console.log(servers);
-      setJoin(servers);
     } catch (err) {
       console.log(err);
     }
   }
 
-  const navigate = useNavigate();
+  async function joinServer(serverId) {
+    try {
+      await addMember(user.uid, serverId);
+      setAdd(false);
+      await fetchJoinedServers(user.uid);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   useEffect(() => {
     const userRaw = localStorage.getItem("user");
@@ -76,9 +90,10 @@ export default function ServerList() {
         const parsedUser = JSON.parse(userRaw);
         if (parsedUser) {
           setUser(parsedUser);
+          fetchJoinedServers(parsedUser.uid);
         }
       } catch (e) {
-        console.error("JSON parse hatası:", e);
+        console.error("JSON parse error:", e);
         localStorage.removeItem("user");
         navigate("/");
       }
@@ -134,16 +149,19 @@ export default function ServerList() {
               className="font-mono text-xs text-accent mb-1.5 flex items-center gap-1.5"
             >
               <FiChevronDown />
-              Avaible Servers
+              Available Servers
             </label>
             <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-80 w-full">
-              {join.map((j) => (
-                <div key={j.id} className="relative flex items-center group">
+              {joinable.map((j) => (
+                <div
+                  key={j.uid}
+                  className="relative flex items-center group cursor-pointer"
+                  onClick={() => joinServer(j.uid)}
+                >
                   <Server
-                    key={j.id}
                     name={j.serverName}
-                    active={false === active}
-                    onClick={() => alert(j.id)}
+                    active={false}
+                    onClick={() => {}}
                   />
                   <FiPlus className="absolute right-4 pointer-events-none text-text-light/60 group-hover:text-accent transition-colors duration-150" />
                 </div>
@@ -194,12 +212,12 @@ export default function ServerList() {
 
           {open && (
             <div className="flex flex-col gap-1 p-2 overflow-y-auto">
-              {servers.map((s, i) => (
+              {joined.map((s) => (
                 <Server
-                  key={`${s}-${i}`}
-                  name={s}
-                  active={i === active}
-                  onClick={() => setActive(i)}
+                  key={s.uid}
+                  name={s.serverName}
+                  active={s.uid === active}
+                  onClick={() => setActive(s.uid)}
                 />
               ))}
             </div>
@@ -216,7 +234,7 @@ export default function ServerList() {
               Settings
             </button>
             <FiLogOut
-              className=" text-text-light/60 hover:text-badge transition-colors cursor-pointer"
+              className="text-text-light/60 hover:text-badge transition-colors cursor-pointer"
               onClick={logout}
             />
           </div>

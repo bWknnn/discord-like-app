@@ -1,28 +1,30 @@
-const URL = "http://localhost:8080/api/users";
+import { URL } from "./constants";
 
-export async function registerUser(username, email, hashedPass) {
+export async function registerUser(userName, email, password) {
   try {
-    const response = await fetch(URL, {
+    const response = await fetch(`${URL}/users/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userName: username, email, hashedPass }),
+      body: JSON.stringify({ userName, email, password }),
     });
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
+
+    return await response.json();
   } catch (error) {
     console.error(error.message);
     throw error;
   }
 }
 
-export async function loginUser(email, hashedPass) {
+export async function loginUser(email, password) {
   try {
-    const response = await fetch(URL + "/login", {
+    const response = await fetch(`${URL}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, hashedPass }),
+      body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {

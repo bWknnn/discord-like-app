@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "channels")
@@ -12,9 +15,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Channel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Long serverId;
+    @UuidGenerator
+    private UUID uid;
+    private UUID serverId;
     private String name;
     private String type;
 

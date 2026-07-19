@@ -10,27 +10,27 @@ export default function RegisterForm() {
   const [type, setType] = useState("Sign In");
   const navigate = useNavigate();
 
-  async function handleSubmit(event) {
+  async function onSubmitHandler(event) {
     event.preventDefault();
-    try {
-      await registerUser(username, email, password);
-      setSuccess(true);
-      setUsername("");
-      setEmail("");
-      setPassword("");
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
-  async function handleLogin(event) {
-    event.preventDefault();
-    try {
-      const user = await loginUser(email, password);
-      localStorage.setItem("user", JSON.stringify(user));
-      navigate("/main");
-    } catch (err) {
-      console.log(err);
+    if (type === "Sign Up") {
+      try {
+        await registerUser(username, email, password);
+        setSuccess(true);
+        setUsername("");
+        setEmail("");
+        setPassword("");
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        const user = await loginUser(email, password);
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/app");
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 
@@ -41,8 +41,8 @@ export default function RegisterForm() {
           <span className="text-accent font-mono">{type}</span>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
-          {type === "Sign Up" ? (
+        <form onSubmit={onSubmitHandler} className="p-6 flex flex-col gap-5">
+          {type === "Sign Up" && (
             <div>
               <label
                 htmlFor="username"
@@ -57,10 +57,9 @@ export default function RegisterForm() {
                 onChange={(e) => setUsername(e.target.value)}
                 className="input"
                 placeholder="username"
+                required
               />
             </div>
-          ) : (
-            ""
           )}
 
           <div>
@@ -77,6 +76,7 @@ export default function RegisterForm() {
               onChange={(e) => setEmail(e.target.value)}
               className="input"
               placeholder="you@example.com"
+              required
             />
           </div>
 
@@ -94,32 +94,26 @@ export default function RegisterForm() {
               onChange={(e) => setPassword(e.target.value)}
               className="input"
               placeholder="••••••••"
+              required
             />
           </div>
 
-          {type === "Sign Up" ? (
-            <button
-              type="submit"
-              className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-accent-hover transition-colors cursor-pointer"
-            >
-              Sign Up
-            </button>
-          ) : (
-            <button
-              onClick={handleLogin}
-              className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-accent-hover transition-colors cursor-pointer"
-            >
-              Sign In
-            </button>
-          )}
+          <button
+            type="submit"
+            className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
+                     hover:bg-accent-hover transition-colors cursor-pointer"
+          >
+            {type === "Sign Up" ? "Sign Up" : "Sign In"}
+          </button>
 
           {type === "Sign Up" ? (
             <p className="font-light tracking-wider text-neutral-400 font-mono text-xs select-none">
               Have an account?
               <span
-                onClick={() => setType("Sign In")}
+                onClick={() => {
+                  setType("Sign In");
+                  setSuccess(false);
+                }}
                 className="text-accent hover:text-accent-hover cursor-pointer transition-colors ml-1"
               >
                 Sign In

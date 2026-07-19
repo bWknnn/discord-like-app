@@ -2,6 +2,10 @@ package com.discord_like_app.server.repository;
 
 import com.discord_like_app.server.model.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface MessageRepository extends JpaRepository<Message, Long> {
+import java.util.UUID;
+
+@Repository
+public interface MessageRepository extends JpaRepository<Message, UUID> {
 }

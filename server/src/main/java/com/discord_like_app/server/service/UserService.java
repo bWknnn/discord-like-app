@@ -1,11 +1,12 @@
 package com.discord_like_app.server.service;
 
+import com.discord_like_app.server.dto.UserIn;
+import com.discord_like_app.server.dto.UserOut;
 import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,9 +20,9 @@ public class UserService {
         this.passEncoder = passEncoder;
     }
 
-    public User login(String email, String rawPassword){
+    public UserOut login(String email, String rawPassword) {
         Optional<User> find = userRepo.findByEmail(email);
-        if(find.isEmpty()){
+        if (find.isEmpty()) {
             throw new RuntimeException("User not found!");
         }
         User user = find.get();
@@ -31,12 +32,19 @@ public class UserService {
             throw new RuntimeException("Wrong password!");
         }
 
-        return user;
+        return new UserOut(user.getUid(), user.getUserName(), user.getEmail());
     }
 
-    public User createUser(User user) {
-        String hashed = passEncoder.encode(user.getHashedPass());
+    public UserOut createUser(UserIn userIn) {
+        User user = new User();
+        user.setUserName(userIn.getUserName());
+        user.setEmail(userIn.getEmail());
+
+        String hashed = passEncoder.encode(userIn.getPassword());
         user.setHashedPass(hashed);
-        return userRepo.save(user);
+
+        User savedUser = userRepo.save(user);
+
+        return new UserOut(savedUser.getUid(), savedUser.getUserName(), savedUser.getEmail());
     }
 }
