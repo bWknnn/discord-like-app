@@ -1,21 +1,26 @@
 package com.discord_like_app.server.controller;
 
+import com.discord_like_app.server.config.CookieUtil;
+import com.discord_like_app.server.dto.AuthResponse;
 import com.discord_like_app.server.dto.UserIn;
 import com.discord_like_app.server.dto.UserOut;
 import com.discord_like_app.server.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;
+    private final CookieUtil cookieUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CookieUtil cookieUtil) {
         this.userService = userService;
+        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/register")
@@ -24,8 +29,17 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserOut> login(@RequestBody UserIn loginRequest) {
-        UserOut userOut = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.ok(userOut);
+    public ResponseEntity<UserOut> login(@RequestBody UserIn loginRequest, HttpServletResponse response) {
+        AuthResponse authResponse = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+
+        response.addCookie(cookieUtil.createJwtCookie(authResponse.getToken()));
+
+        return ResponseEntity.ok(authResponse.getUser());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        response.addCookie(cookieUtil.deleteJwtCookie());
+        return ResponseEntity.noContent().build();
     }
 }

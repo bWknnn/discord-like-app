@@ -5,6 +5,7 @@ export async function registerUser(userName, email, password) {
     const response = await fetch(`${URL}/users/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ userName, email, password }),
     });
 
@@ -24,6 +25,7 @@ export async function loginUser(email, password) {
     const response = await fetch(`${URL}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -35,5 +37,16 @@ export async function loginUser(email, password) {
   } catch (error) {
     console.error(error.message);
     throw error;
+  }
+}
+
+export async function logOut() {
+  const response = await fetch(`${URL}/users/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Logout failed: ${response.status}`);
   }
 }

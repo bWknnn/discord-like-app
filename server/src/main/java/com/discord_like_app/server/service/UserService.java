@@ -1,5 +1,7 @@
 package com.discord_like_app.server.service;
 
+import com.discord_like_app.server.config.JwtService;
+import com.discord_like_app.server.dto.AuthResponse;
 import com.discord_like_app.server.dto.UserIn;
 import com.discord_like_app.server.dto.UserOut;
 import com.discord_like_app.server.model.User;
@@ -14,13 +16,15 @@ public class UserService {
 
     private final UserRepository userRepo;
     private final PasswordEncoder passEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepo, PasswordEncoder passEncoder) {
+    public UserService(UserRepository userRepo, PasswordEncoder passEncoder, JwtService jwtService) {
         this.userRepo = userRepo;
         this.passEncoder = passEncoder;
+        this.jwtService = jwtService;
     }
 
-    public UserOut login(String email, String rawPassword) {
+    public AuthResponse login(String email, String rawPassword) {
         Optional<User> find = userRepo.findByEmail(email);
         if (find.isEmpty()) {
             throw new RuntimeException("User not found!");
@@ -32,7 +36,10 @@ public class UserService {
             throw new RuntimeException("Wrong password!");
         }
 
-        return new UserOut(user.getUid(), user.getUserName(), user.getEmail());
+        UserOut userOut = new UserOut(user.getUid(), user.getUserName(), user.getEmail());
+        String token = jwtService.generateToken(userOut);
+
+        return new AuthResponse(token, userOut);
     }
 
     public UserOut createUser(UserIn userIn) {

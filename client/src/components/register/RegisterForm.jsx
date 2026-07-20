@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { registerUser, loginUser } from "../../api/users";
 import { useNavigate } from "react-router";
 
@@ -8,7 +8,16 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
   const [type, setType] = useState("Sign In");
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      navigate("/app", { replace: true });
+    }
+  }, [navigate]);
 
   async function onSubmitHandler(event) {
     event.preventDefault();
@@ -16,22 +25,43 @@ export default function RegisterForm() {
     if (type === "Sign Up") {
       try {
         await registerUser(username, email, password);
+
         setSuccess(true);
         setUsername("");
         setEmail("");
         setPassword("");
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.error("Registration failed:", error);
       }
-    } else {
-      try {
-        const user = await loginUser(email, password);
-        localStorage.setItem("user", JSON.stringify(user));
-        navigate("/app");
-      } catch (err) {
-        console.log(err);
-      }
+
+      return;
     }
+
+    try {
+      const user = await loginUser(email, password);
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+      navigate("/app", { replace: true });
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  }
+
+  function switchToSignIn() {
+    setType("Sign In");
+    setSuccess(false);
+    setUsername("");
+    setEmail("");
+    setPassword("");
+  }
+
+  function switchToSignUp() {
+    setType("Sign Up");
+    setSuccess(false);
+    setUsername("");
+    setEmail("");
+    setPassword("");
   }
 
   return (
@@ -50,11 +80,12 @@ export default function RegisterForm() {
               >
                 &gt; username
               </label>
+
               <input
                 id="username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(event) => setUsername(event.target.value)}
                 className="input"
                 placeholder="username"
                 required
@@ -69,11 +100,12 @@ export default function RegisterForm() {
             >
               &gt; email
             </label>
+
             <input
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
               className="input"
               placeholder="you@example.com"
               required
@@ -87,11 +119,12 @@ export default function RegisterForm() {
             >
               &gt; password
             </label>
+
             <input
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
               className="input"
               placeholder="••••••••"
               required
@@ -100,8 +133,7 @@ export default function RegisterForm() {
 
           <button
             type="submit"
-            className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
-                     hover:bg-accent-hover transition-colors cursor-pointer"
+            className="mt-2 font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded hover:bg-accent-hover transition-colors cursor-pointer"
           >
             {type === "Sign Up" ? "Sign Up" : "Sign In"}
           </button>
@@ -109,25 +141,24 @@ export default function RegisterForm() {
           {type === "Sign Up" ? (
             <p className="font-light tracking-wider text-neutral-400 font-mono text-xs select-none">
               Have an account?
-              <span
-                onClick={() => {
-                  setType("Sign In");
-                  setSuccess(false);
-                }}
+              <button
+                type="button"
+                onClick={switchToSignIn}
                 className="text-accent hover:text-accent-hover cursor-pointer transition-colors ml-1"
               >
                 Sign In
-              </span>
+              </button>
             </p>
           ) : (
             <p className="font-light tracking-wider text-neutral-400 font-mono text-xs select-none">
               Create an account?
-              <span
-                onClick={() => setType("Sign Up")}
+              <button
+                type="button"
+                onClick={switchToSignUp}
                 className="text-accent hover:text-accent-hover cursor-pointer transition-colors ml-1"
               >
                 Sign Up
-              </span>
+              </button>
             </p>
           )}
 

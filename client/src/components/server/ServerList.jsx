@@ -8,97 +8,127 @@ import {
   FiPlusCircle,
   FiLogOut,
 } from "react-icons/fi";
-import Server from "./Server";
 import { useNavigate } from "react-router";
+
+import Server from "./Server";
 import {
   addMember,
   createServer,
   getJoinedServers,
   getJoinableServers,
 } from "../../api/servers";
+import { logOut } from "../../api/users";
 
 export default function ServerList() {
-  const [active, setActive] = useState(""); // which server is selected
-  const [open, setOpen] = useState(true); // is server list shown
-  const [create, setCreate] = useState(false); // server creation tab
-  const [add, setAdd] = useState(false); // server addition tab
-  const [serverName, setServerName] = useState(""); // servername in createserver
-  const [user, setUser] = useState(null); // user
-  const [joinable, setJoinable] = useState([]); // joinable servers
-  const [joined, setJoined] = useState([]); // joined servers
+  const [active, setActive] = useState("");
+  const [open, setOpen] = useState(true);
+  const [create, setCreate] = useState(false);
+  const [add, setAdd] = useState(false);
+  const [serverName, setServerName] = useState("");
+  const [user, setUser] = useState(null);
+  const [joinable, setJoinable] = useState([]);
+  const [joined, setJoined] = useState([]);
 
   const navigate = useNavigate();
 
-  function logout() {
-    localStorage.clear();
-    navigate("/");
+  async function handleLogout() {
+    try {
+      await logOut();
+
+      localStorage.removeItem("user");
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   }
 
   async function fetchJoinedServers(userId) {
     try {
       const data = await getJoinedServers(userId);
       setJoined(data);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error("Failed to fetch joined servers:", error);
     }
   }
 
   async function serverCreate() {
-    if (!serverName || serverName.trim() === "") {
+    const trimmedServerName = serverName.trim();
+
+    if (!trimmedServerName) {
       alert("Enter a server name.");
       return;
     }
+
+    if (!user?.uid) {
+      return;
+    }
+
     try {
-      const server = await createServer(serverName.trim(), user?.userName);
+      const server = await createServer(trimmedServerName, user.userName);
+
       await addMember(user.uid, server.uid);
 
       setServerName("");
       setCreate(false);
 
       await fetchJoinedServers(user.uid);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error("Failed to create server:", error);
     }
   }
 
   async function getAllServers() {
-    if (!user?.uid) return;
+    if (!user?.uid) {
+      return;
+    }
+
     try {
       const serversData = await getJoinableServers(user.uid);
+
       setJoinable(serversData);
       setAdd(true);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error("Failed to fetch joinable servers:", error);
     }
   }
 
   async function joinServer(serverId) {
+    if (!user?.uid) {
+      return;
+    }
+
     try {
       await addMember(user.uid, serverId);
+
       setAdd(false);
       await fetchJoinedServers(user.uid);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error("Failed to join server:", error);
     }
   }
 
   useEffect(() => {
     const userRaw = localStorage.getItem("user");
 
-    if (userRaw) {
-      try {
-        const parsedUser = JSON.parse(userRaw);
-        if (parsedUser) {
-          setUser(parsedUser);
-          fetchJoinedServers(parsedUser.uid);
-        }
-      } catch (e) {
-        console.error("JSON parse error:", e);
-        localStorage.removeItem("user");
-        navigate("/");
+    // Kullanıcı yoksa ProtectedRoute zaten "/" sayfasına gönderir.
+    if (!userRaw) {
+      return;
+    }
+
+    try {
+      const parsedUser = JSON.parse(userRaw);
+
+      if (!parsedUser?.uid) {
+        throw new Error("Invalid user data");
       }
-    } else {
-      navigate("/");
+
+      setUser(parsedUser);
+      fetchJoinedServers(parsedUser.uid);
+    } catch (error) {
+      console.error("Invalid user data:", error);
+
+      localStorage.removeItem("user");
+      navigate("/", { replace: true });
     }
   }, [navigate]);
 
@@ -110,7 +140,7 @@ export default function ServerList() {
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
         >
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col"
           >
             <label
@@ -119,15 +149,21 @@ export default function ServerList() {
             >
               &gt; servername
             </label>
+
             <input
               id="servername"
               type="text"
               value={serverName}
-              onChange={(e) => setServerName(e.target.value)}
+              onChange={(event) => setServerName(event.target.value)}
               className="input mt-2"
               placeholder="Server Name"
             />
-            <button className="create-button" onClick={serverCreate}>
+
+            <button
+              type="button"
+              className="create-button"
+              onClick={serverCreate}
+            >
               <FiPlusCircle size={16} />
               Create Server
             </button>
@@ -141,31 +177,36 @@ export default function ServerList() {
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
         >
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col"
           >
-            <label
-              htmlFor="servername"
-              className="font-mono text-xs text-accent mb-1.5 flex items-center gap-1.5"
-            >
+            <div className="font-mono text-xs text-accent mb-1.5 flex items-center gap-1.5">
               <FiChevronDown />
               Available Servers
-            </label>
+            </div>
+
             <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-80 w-full">
-              {joinable.map((j) => (
-                <div
-                  key={j.uid}
-                  className="relative flex items-center group cursor-pointer"
-                  onClick={() => joinServer(j.uid)}
-                >
-                  <Server
-                    name={j.serverName}
-                    active={false}
-                    onClick={() => {}}
-                  />
-                  <FiPlus className="absolute right-4 pointer-events-none text-text-light/60 group-hover:text-accent transition-colors duration-150" />
-                </div>
-              ))}
+              {joinable.length === 0 ? (
+                <p className="font-mono text-xs text-text-light/60 p-2">
+                  No available servers.
+                </p>
+              ) : (
+                joinable.map((joinableServer) => (
+                  <div
+                    key={joinableServer.uid}
+                    className="relative flex items-center group cursor-pointer"
+                    onClick={() => joinServer(joinableServer.uid)}
+                  >
+                    <Server
+                      name={joinableServer.serverName}
+                      active={false}
+                      onClick={() => {}}
+                    />
+
+                    <FiPlus className="absolute right-4 pointer-events-none text-text-light/60 group-hover:text-accent transition-colors duration-150" />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -173,11 +214,16 @@ export default function ServerList() {
 
       <div className="bg-bg-card flex flex-col w-fit px-4 h-full gap-1 border-r border-border-dark rounded-md">
         <header className="flex flex-col gap-2 bg-bg-card p-2 rounded-md">
-          <button className="create-button" onClick={() => setCreate(true)}>
+          <button
+            type="button"
+            className="create-button"
+            onClick={() => setCreate(true)}
+          >
             <FiPlusCircle size={16} />
             Create Server
           </button>
-          <button className="add-button" onClick={getAllServers}>
+
+          <button type="button" className="add-button" onClick={getAllServers}>
             <FiPlus size={16} />
             Add Server
           </button>
@@ -187,6 +233,7 @@ export default function ServerList() {
               size={15}
               className="absolute left-0 top-1/2 -translate-y-1/2 text-text-light/40"
             />
+
             <input
               placeholder="Search for a server"
               type="text"
@@ -199,25 +246,29 @@ export default function ServerList() {
 
         <div className="w-64 bg-bg-card flex flex-col flex-1 min-h-0">
           <button
-            onClick={() => setOpen(!open)}
+            type="button"
+            onClick={() => setOpen((currentOpen) => !currentOpen)}
             className="w-full flex items-center gap-2 px-3 py-3 border-b border-border-dark bg-bg-header rounded-md cursor-pointer"
           >
             <FiChevronRight
               size={15}
               className="text-accent transition-transform duration-150"
-              style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
+              style={{
+                transform: open ? "rotate(90deg)" : "rotate(0deg)",
+              }}
             />
+
             <span className="font-mono text-sm text-accent">servers</span>
           </button>
 
           {open && (
             <div className="flex flex-col gap-1 p-2 overflow-y-auto">
-              {joined.map((s) => (
+              {joined.map((joinedServer) => (
                 <Server
-                  key={s.uid}
-                  name={s.serverName}
-                  active={s.uid === active}
-                  onClick={() => setActive(s.uid)}
+                  key={joinedServer.uid}
+                  name={joinedServer.serverName}
+                  active={joinedServer.uid === active}
+                  onClick={() => setActive(joinedServer.uid)}
                 />
               ))}
             </div>
@@ -228,15 +279,25 @@ export default function ServerList() {
           <span className="font-mono text-sm text-accent">
             {user?.userName}
           </span>
+
           <div className="flex justify-between">
-            <button className="flex items-center gap-1.5 font-mono text-xs text-text-light/60 hover:text-accent cursor-pointer transition-colors w-fit">
+            <button
+              type="button"
+              className="flex items-center gap-1.5 font-mono text-xs text-text-light/60 hover:text-accent cursor-pointer transition-colors w-fit"
+            >
               <FiSettings size={13} />
               Settings
             </button>
-            <FiLogOut
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              aria-label="Log out"
+              title="Log out"
               className="text-text-light/60 hover:text-badge transition-colors cursor-pointer"
-              onClick={logout}
-            />
+            >
+              <FiLogOut />
+            </button>
           </div>
         </footer>
       </div>
