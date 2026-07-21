@@ -9,7 +9,6 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import { useNavigate } from "react-router";
-
 import Server from "./Server";
 import {
   addMember,
@@ -19,7 +18,7 @@ import {
 } from "../../api/servers";
 import { logOut } from "../../api/users";
 
-export default function ServerList() {
+export default function ServerList({ onSelectServer }) {
   const [active, setActive] = useState("");
   const [open, setOpen] = useState(true);
   const [create, setCreate] = useState(false);
@@ -110,7 +109,6 @@ export default function ServerList() {
   useEffect(() => {
     const userRaw = localStorage.getItem("user");
 
-    // Kullanıcı yoksa ProtectedRoute zaten "/" sayfasına gönderir.
     if (!userRaw) {
       return;
     }
@@ -157,6 +155,7 @@ export default function ServerList() {
               onChange={(event) => setServerName(event.target.value)}
               className="input mt-2"
               placeholder="Server Name"
+              autoComplete="off"
             />
 
             <button
@@ -240,6 +239,7 @@ export default function ServerList() {
               name="search"
               id="search"
               className="input pl-5"
+              autoComplete="off"
             />
           </div>
         </header>
@@ -268,7 +268,10 @@ export default function ServerList() {
                   key={joinedServer.uid}
                   name={joinedServer.serverName}
                   active={joinedServer.uid === active}
-                  onClick={() => setActive(joinedServer.uid)}
+                  onClick={() => {
+                    setActive(joinedServer.uid);
+                    if (onSelectServer) onSelectServer(joinedServer.uid);
+                  }}
                 />
               ))}
             </div>
