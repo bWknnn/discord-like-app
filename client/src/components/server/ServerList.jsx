@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   FiPlus,
   FiSearch,
@@ -132,84 +133,102 @@ export default function ServerList({ onSelectServer }) {
 
   return (
     <>
-      {create && (
-        <div
-          onClick={() => setCreate(false)}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-        >
+      {create &&
+        createPortal(
           <div
-            onClick={(event) => event.stopPropagation()}
-            className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col"
+            onClick={() => {
+              setCreate(false);
+              setServerName("");
+            }}
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
           >
-            <label
-              htmlFor="servername"
-              className="block font-mono text-xs text-accent mb-1.5"
+            <div
+              onClick={(event) => event.stopPropagation()}
+              className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col animate-in fade-in zoom-in-95 duration-150"
             >
-              &gt; servername
-            </label>
+              <label
+                htmlFor="servername"
+                className="block font-mono text-xs text-accent mb-1.5"
+              >
+                &gt; servername
+              </label>
 
-            <input
-              id="servername"
-              type="text"
-              value={serverName}
-              onChange={(event) => setServerName(event.target.value)}
-              className="input mt-2"
-              placeholder="Server Name"
-              autoComplete="off"
-            />
+              <input
+                id="servername"
+                type="text"
+                value={serverName}
+                onChange={(event) => setServerName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    serverCreate();
+                  }
 
-            <button
-              type="button"
-              className="create-button"
-              onClick={serverCreate}
-            >
-              <FiPlusCircle size={16} />
-              Create Server
-            </button>
-          </div>
-        </div>
-      )}
+                  if (event.key === "Escape") {
+                    setCreate(false);
+                    setServerName("");
+                  }
+                }}
+                className="input mt-2"
+                placeholder="Server Name"
+                autoComplete="off"
+                autoFocus
+              />
 
-      {add && (
-        <div
-          onClick={() => setAdd(false)}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-        >
+              <button
+                type="button"
+                className="create-button"
+                onClick={serverCreate}
+              >
+                <FiPlusCircle size={16} />
+                Create Server
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
+
+      {add &&
+        createPortal(
           <div
-            onClick={(event) => event.stopPropagation()}
-            className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col"
+            onClick={() => setAdd(false)}
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
           >
-            <div className="font-mono text-xs text-accent mb-1.5 flex items-center gap-1.5">
-              <FiChevronDown />
-              Available Servers
-            </div>
+            <div
+              onClick={(event) => event.stopPropagation()}
+              className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col animate-in fade-in zoom-in-95 duration-150"
+            >
+              <div className="font-mono text-xs text-accent mb-1.5 flex items-center gap-1.5">
+                <FiChevronDown />
+                Available Servers
+              </div>
 
-            <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-80 w-full">
-              {joinable.length === 0 ? (
-                <p className="font-mono text-xs text-text-light/60 p-2">
-                  No available servers.
-                </p>
-              ) : (
-                joinable.map((joinableServer) => (
-                  <div
-                    key={joinableServer.uid}
-                    className="relative flex items-center group cursor-pointer"
-                    onClick={() => joinServer(joinableServer.uid)}
-                  >
-                    <Server
-                      name={joinableServer.serverName}
-                      active={false}
-                      onClick={() => {}}
-                    />
+              <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-80 w-full">
+                {joinable.length === 0 ? (
+                  <p className="font-mono text-xs text-text-light/60 p-2">
+                    No available servers.
+                  </p>
+                ) : (
+                  joinable.map((joinableServer) => (
+                    <div
+                      key={joinableServer.uid}
+                      className="relative flex items-center group cursor-pointer"
+                      onClick={() => joinServer(joinableServer.uid)}
+                    >
+                      <Server
+                        name={joinableServer.serverName}
+                        active={false}
+                        onClick={() => {}}
+                      />
 
-                    <FiPlus className="absolute right-4 pointer-events-none text-text-light/60 group-hover:text-accent transition-colors duration-150" />
-                  </div>
-                ))
-              )}
+                      <FiPlus className="absolute right-4 pointer-events-none text-text-light/60 group-hover:text-accent transition-colors duration-150" />
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       <div className="bg-bg-card flex flex-col w-fit px-4 h-full gap-1 border-r border-border-dark rounded-md">
         <header className="flex flex-col gap-2 bg-bg-card p-2 rounded-md">
@@ -270,7 +289,7 @@ export default function ServerList({ onSelectServer }) {
                   active={joinedServer.uid === active}
                   onClick={() => {
                     setActive(joinedServer.uid);
-                    if (onSelectServer) onSelectServer(joinedServer.uid);
+                    onSelectServer?.(joinedServer.uid);
                   }}
                 />
               ))}

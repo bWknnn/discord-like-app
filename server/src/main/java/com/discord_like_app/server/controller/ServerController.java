@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/servers")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ServerController {
 
     private final ServerService service;

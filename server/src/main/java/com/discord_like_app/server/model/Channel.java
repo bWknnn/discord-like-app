@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
@@ -17,8 +18,12 @@ public class Channel {
     @Id
     @UuidGenerator
     private UUID uid;
-    private UUID serverId;
+
     private String name;
     private String type;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "server_id", nullable = false)
+    @ToString.Exclude
+    private Server server;
 }

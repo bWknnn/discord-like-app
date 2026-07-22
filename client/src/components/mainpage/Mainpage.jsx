@@ -14,7 +14,10 @@ export default function MainPage() {
       </div>
 
       <div className="shrink-0 h-full -ml-2 z-0">
-        <ChannelList visible={Boolean(selectedServerId)} />
+        <ChannelList
+          visible={Boolean(selectedServerId)}
+          serverId={selectedServerId}
+        />
       </div>
     </div>
   );
