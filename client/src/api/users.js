@@ -2,7 +2,7 @@ import { URL } from "./constants";
 
 export async function registerUser(userName, email, password) {
   try {
-    const response = await fetch(`${URL}/users/register`, {
+    const response = await fetch(`${URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -22,7 +22,7 @@ export async function registerUser(userName, email, password) {
 
 export async function loginUser(email, password) {
   try {
-    const response = await fetch(`${URL}/users/login`, {
+    const response = await fetch(`${URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -41,7 +41,7 @@ export async function loginUser(email, password) {
 }
 
 export async function logOut() {
-  const response = await fetch(`${URL}/users/logout`, {
+  const response = await fetch(`${URL}/auth/logout`, {
     method: "POST",
     credentials: "include",
   });

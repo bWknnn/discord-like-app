@@ -1,30 +1,44 @@
 package com.discord_like_app.server.controller;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+import com.discord_like_app.server.config.CookieUtil;
+import com.discord_like_app.server.dto.AuthResponse;
+import com.discord_like_app.server.dto.UserIn;
+import com.discord_like_app.server.dto.UserOut;
+import com.discord_like_app.server.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.Duration;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping({"/api/auth", "/api/users"})
 public class AuthController {
 
-    @PostMapping("/api/auth/logout")
-    public ResponseEntity<Void> logout() {
+    private final UserService userService;
+    private final CookieUtil cookieUtil;
 
-        ResponseCookie deletedCookie = ResponseCookie
-                .from("jwt", "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(Duration.ZERO)
-                .build();
+    public AuthController(UserService userService, CookieUtil cookieUtil) {
+        this.userService = userService;
+        this.cookieUtil = cookieUtil;
+    }
 
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, deletedCookie.toString())
-                .build();
+    @PostMapping("/register")
+    public ResponseEntity<UserOut> register(@RequestBody UserIn userIn) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userIn));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserOut> login(@RequestBody UserIn loginRequest, HttpServletResponse response) {
+        AuthResponse authResponse = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+
+        response.addCookie(cookieUtil.createJwtCookie(authResponse.getToken()));
+
+        return ResponseEntity.ok(authResponse.getUser());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        response.addCookie(cookieUtil.deleteJwtCookie());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -23,6 +23,10 @@ public class MemberService {
     }
 
     public void addMember(MemberIn memberIn) {
+        if (memberRepository.existsByUserUidAndServerUid(memberIn.getUserId(), memberIn.getServerId())) {
+            return;
+        }
+
         User user = userRepository.findById(memberIn.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

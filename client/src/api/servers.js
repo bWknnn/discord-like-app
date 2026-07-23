@@ -5,6 +5,7 @@ export async function createServer(serverName, owner) {
     const response = await fetch(`${URL}/servers/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ serverName, owner }),
     });
 
@@ -20,7 +21,9 @@ export async function createServer(serverName, owner) {
 
 export async function getJoinedServers(userId) {
   try {
-    const response = await fetch(`${URL}/servers/joined/${userId}`);
+    const response = await fetch(`${URL}/servers/joined/${userId}`, {
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -34,7 +37,9 @@ export async function getJoinedServers(userId) {
 
 export async function getJoinableServers(userId) {
   try {
-    const response = await fetch(`${URL}/servers/joinable/${userId}`);
+    const response = await fetch(`${URL}/servers/joinable/${userId}`, {
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -51,6 +56,7 @@ export async function addMember(userId, serverId) {
     const response = await fetch(`${URL}/members/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ userId, serverId }),
     });
 

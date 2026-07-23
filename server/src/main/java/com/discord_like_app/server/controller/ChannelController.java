@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/channels")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ChannelController {
 
     private final ChannelService service;

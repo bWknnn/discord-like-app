@@ -27,13 +27,13 @@ public class UserService {
     public AuthResponse login(String email, String rawPassword) {
         Optional<User> find = userRepo.findByEmail(email);
         if (find.isEmpty()) {
-            throw new RuntimeException("User not found!");
+            throw new IllegalArgumentException("User or password is wrong!");
         }
         User user = find.get();
         boolean match = passEncoder.matches(rawPassword, user.getHashedPass());
 
         if (!match) {
-            throw new RuntimeException("Wrong password!");
+            throw new IllegalArgumentException("User or password is wrong!");
         }
 
         UserOut userOut = new UserOut(user.getUid(), user.getUserName(), user.getEmail());
@@ -43,6 +43,10 @@ public class UserService {
     }
 
     public UserOut createUser(UserIn userIn) {
+        if (userRepo.findByEmail(userIn.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email address is already in use!");
+        }
+
         User user = new User();
         user.setUserName(userIn.getUserName());
         user.setEmail(userIn.getEmail());

@@ -5,6 +5,7 @@ export async function channelCreate(name, type, serverId) {
     const response = await fetch(`${URL}/channels/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ name, type, serverId }),
     });
 
@@ -19,7 +20,9 @@ export async function channelCreate(name, type, serverId) {
 
 export async function channelFetch(serverId) {
   try {
-    const response = await fetch(`${URL}/channels/get/${serverId}`);
+    const response = await fetch(`${URL}/channels/get/${serverId}`, {
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
