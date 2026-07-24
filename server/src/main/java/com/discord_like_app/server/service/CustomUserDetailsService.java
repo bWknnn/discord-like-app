@@ -1,5 +1,6 @@
 package com.discord_like_app.server.service;
 
+import com.discord_like_app.server.config.CustomUserDetails;
 import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                         )
                 );
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getHashedPass())
-                .authorities("USER")
-                .build();
+        return new CustomUserDetails(user);
     }
 }

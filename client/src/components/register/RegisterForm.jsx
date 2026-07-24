@@ -7,6 +7,7 @@ export default function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [type, setType] = useState("Sign In");
 
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function RegisterForm() {
 
   async function onSubmitHandler(event) {
     event.preventDefault();
+    setErrorMessage("");
 
     if (type === "Sign Up") {
       try {
@@ -31,7 +33,7 @@ export default function RegisterForm() {
         setEmail("");
         setPassword("");
       } catch (error) {
-        console.error("Registration failed:", error);
+        setErrorMessage(error.message || "Registration failed. Please try again.");
       }
 
       return;
@@ -44,13 +46,14 @@ export default function RegisterForm() {
 
       navigate("/app", { replace: true });
     } catch (error) {
-      console.error("Login failed:", error);
+      setErrorMessage(error.message || "Login failed. Please check your credentials.");
     }
   }
 
   function switchToSignIn() {
     setType("Sign In");
     setSuccess(false);
+    setErrorMessage("");
     setUsername("");
     setEmail("");
     setPassword("");
@@ -59,6 +62,7 @@ export default function RegisterForm() {
   function switchToSignUp() {
     setType("Sign Up");
     setSuccess(false);
+    setErrorMessage("");
     setUsername("");
     setEmail("");
     setPassword("");
@@ -72,6 +76,13 @@ export default function RegisterForm() {
         </div>
 
         <form onSubmit={onSubmitHandler} className="p-6 flex flex-col gap-5">
+          {errorMessage && (
+            <div className="font-mono text-xs text-badge bg-badge/10 border border-badge/30 p-2.5 rounded flex items-center gap-2 animate-in fade-in duration-150">
+              <span>⚠</span>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           {type === "Sign Up" && (
             <div>
               <label

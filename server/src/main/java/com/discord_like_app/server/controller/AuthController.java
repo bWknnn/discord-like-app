@@ -1,9 +1,10 @@
 package com.discord_like_app.server.controller;
 
 import com.discord_like_app.server.config.CookieUtil;
-import com.discord_like_app.server.dto.AuthResponse;
-import com.discord_like_app.server.dto.UserIn;
-import com.discord_like_app.server.dto.UserOut;
+import com.discord_like_app.server.dto.AuthResponseDto;
+import com.discord_like_app.server.dto.UserInDto;
+import com.discord_like_app.server.dto.UserOutDto;
+import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -23,17 +24,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserOut> register(@RequestBody UserIn userIn) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userIn));
+    public ResponseEntity<UserOutDto> register(@RequestBody UserInDto userInDto) {
+        User savedUser = userService.createUser(userInDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserOutDto.fromEntity(savedUser));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserOut> login(@RequestBody UserIn loginRequest, HttpServletResponse response) {
-        AuthResponse authResponse = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<UserOutDto> login(@RequestBody UserInDto loginRequest, HttpServletResponse response) {
+        AuthResponseDto authResponseDto = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-        response.addCookie(cookieUtil.createJwtCookie(authResponse.getToken()));
+        response.addCookie(cookieUtil.createJwtCookie(authResponseDto.getToken()));
 
-        return ResponseEntity.ok(authResponse.getUser());
+        return ResponseEntity.ok(authResponseDto.getUser());
     }
 
     @PostMapping("/logout")

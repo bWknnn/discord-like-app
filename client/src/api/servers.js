@@ -19,9 +19,9 @@ export async function createServer(serverName, owner) {
   }
 }
 
-export async function getJoinedServers(userId) {
+export async function getJoinedServers() {
   try {
-    const response = await fetch(`${URL}/servers/joined/${userId}`, {
+    const response = await fetch(`${URL}/servers/joined`, {
       credentials: "include",
     });
 
@@ -35,9 +35,9 @@ export async function getJoinedServers(userId) {
   }
 }
 
-export async function getJoinableServers(userId) {
+export async function getJoinableServers() {
   try {
-    const response = await fetch(`${URL}/servers/joinable/${userId}`, {
+    const response = await fetch(`${URL}/servers/joinable`, {
       credentials: "include",
     });
 
@@ -51,13 +51,14 @@ export async function getJoinableServers(userId) {
   }
 }
 
-export async function addMember(userId, serverId) {
+export async function addMember(serverIdOrUserId, optionalServerId) {
+  const serverId = optionalServerId || serverIdOrUserId;
   try {
     const response = await fetch(`${URL}/members/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ userId, serverId }),
+      body: JSON.stringify({ serverId }),
     });
 
     if (!response.ok) {

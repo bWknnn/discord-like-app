@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServerIn {
+public class ServerInDto {
     private String serverName;
     private String owner;
 }

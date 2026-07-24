@@ -42,9 +42,9 @@ export default function ServerList({ onSelectServer }) {
     }
   }
 
-  async function fetchJoinedServers(userId) {
+  async function fetchJoinedServers() {
     try {
-      const data = await getJoinedServers(userId);
+      const data = await getJoinedServers();
       setJoined(data);
     } catch (error) {
       console.error("Failed to fetch joined servers:", error);
@@ -59,31 +59,23 @@ export default function ServerList({ onSelectServer }) {
       return;
     }
 
-    if (!user?.uid) {
-      return;
-    }
-
     try {
-      const server = await createServer(trimmedServerName, user.userName);
+      const server = await createServer(trimmedServerName, user?.userName || "");
 
-      await addMember(user.uid, server.uid);
+      await addMember(server.uid);
 
       setServerName("");
       setCreate(false);
 
-      await fetchJoinedServers(user.uid);
+      await fetchJoinedServers();
     } catch (error) {
       console.error("Failed to create server:", error);
     }
   }
 
   async function getAllServers() {
-    if (!user?.uid) {
-      return;
-    }
-
     try {
-      const serversData = await getJoinableServers(user.uid);
+      const serversData = await getJoinableServers();
 
       setJoinable(serversData);
       setAdd(true);
@@ -93,15 +85,11 @@ export default function ServerList({ onSelectServer }) {
   }
 
   async function joinServer(serverId) {
-    if (!user?.uid) {
-      return;
-    }
-
     try {
-      await addMember(user.uid, serverId);
+      await addMember(serverId);
 
       setAdd(false);
-      await fetchJoinedServers(user.uid);
+      await fetchJoinedServers();
     } catch (error) {
       console.error("Failed to join server:", error);
     }
@@ -116,13 +104,8 @@ export default function ServerList({ onSelectServer }) {
 
     try {
       const parsedUser = JSON.parse(userRaw);
-
-      if (!parsedUser?.uid) {
-        throw new Error("Invalid user data");
-      }
-
       setUser(parsedUser);
-      fetchJoinedServers(parsedUser.uid);
+      fetchJoinedServers();
     } catch (error) {
       console.error("Invalid user data:", error);
 

@@ -12,6 +12,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Message {
     @Id
     @UuidGenerator
@@ -19,5 +20,7 @@ public class Message {
     private String content;
     private String author;
     private String channelId;
+
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

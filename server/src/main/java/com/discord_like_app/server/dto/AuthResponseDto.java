@@ -1,15 +1,15 @@
 package com.discord_like_app.server.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class MemberIn {
-    private UUID userId;
-    private UUID serverId;
+@NoArgsConstructor
+@Builder
+public class AuthResponseDto {
+    private String token;
+    private UserOutDto user;
 }

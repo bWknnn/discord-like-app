@@ -1,6 +1,6 @@
 package com.discord_like_app.server.controller;
 
-import com.discord_like_app.server.dto.ChannelDTO;
+import com.discord_like_app.server.dto.ChannelDto;
 import com.discord_like_app.server.service.ChannelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +20,13 @@ public class ChannelController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ChannelDTO> create(@RequestBody ChannelDTO channelDTO){
-        ChannelDTO createdChannel = service.createChannel(channelDTO);
+    public ResponseEntity<ChannelDto> create(@RequestBody ChannelDto channelDTO){
+        ChannelDto createdChannel = service.createChannel(channelDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdChannel);
     }
 
     @GetMapping("/get/{serverId}")
-    public List<ChannelDTO> getAllChannels(@PathVariable UUID serverId){
+    public List<ChannelDto> getAllChannels(@PathVariable UUID serverId){
         return service.getChannelsByServerId(serverId);
     }
 }

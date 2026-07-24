@@ -1,6 +1,6 @@
 package com.discord_like_app.server.config;
 
-import com.discord_like_app.server.dto.UserOut;
+import com.discord_like_app.server.dto.UserOutDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -31,7 +31,7 @@ public class JwtService {
         this.expirationTime = expirationTime;
     }
 
-    public String generateToken(UserOut user) {
+    public String generateToken(UserOutDto user) {
         Date now = new Date();
 
         return Jwts.builder()

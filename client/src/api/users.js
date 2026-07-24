@@ -10,12 +10,15 @@ export async function registerUser(userName, email, password) {
     });
 
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Response status: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error(error.message);
+    if (error.message === "Failed to fetch") {
+      throw new Error("Unable to connect to server. Please check your connection.");
+    }
     throw error;
   }
 }
@@ -30,23 +33,33 @@ export async function loginUser(email, password) {
     });
 
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Response status: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error(error.message);
+    if (error.message === "Failed to fetch") {
+      throw new Error("Unable to connect to server. Please check your connection.");
+    }
     throw error;
   }
 }
 
 export async function logOut() {
-  const response = await fetch(`${URL}/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
+  try {
+    const response = await fetch(`${URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
 
-  if (!response.ok) {
-    throw new Error(`Logout failed: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Logout failed: ${response.status}`);
+    }
+  } catch (error) {
+    if (error.message === "Failed to fetch") {
+      throw new Error("Unable to connect to server. Please check your connection.");
+    }
+    throw error;
   }
 }

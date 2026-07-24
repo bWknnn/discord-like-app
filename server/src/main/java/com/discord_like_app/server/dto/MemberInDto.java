@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserIn {
-    private String userName;
-    private String email;
-    private String password;
+public class MemberInDto {
+    private UUID serverId;
 }

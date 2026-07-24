@@ -1,13 +1,14 @@
 package com.discord_like_app.server.controller;
 
-import com.discord_like_app.server.dto.ServerIn;
-import com.discord_like_app.server.dto.ServerOut;
+import com.discord_like_app.server.config.CustomUserDetails;
+import com.discord_like_app.server.dto.ServerInDto;
+import com.discord_like_app.server.dto.ServerOutDto;
 import com.discord_like_app.server.service.ServerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -20,17 +21,17 @@ public class ServerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ServerOut> createServer(@RequestBody ServerIn serverIn) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createServer(serverIn));
+    public ResponseEntity<ServerOutDto> createServer(@RequestBody ServerInDto serverInDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createServer(serverInDto));
     }
 
-    @GetMapping("/joined/{userId}")
-    public ResponseEntity<List<ServerOut>> getJoinedServers(@PathVariable UUID userId) {
-        return ResponseEntity.ok(service.getJoinedServers(userId));
+    @GetMapping("/joined")
+    public ResponseEntity<List<ServerOutDto>> getJoinedServers(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(service.getJoinedServers(userDetails.getId()));
     }
 
-    @GetMapping("/joinable/{userId}")
-    public ResponseEntity<List<ServerOut>> getJoinableServers(@PathVariable UUID userId) {
-        return ResponseEntity.ok(service.getJoinableServers(userId));
+    @GetMapping("/joinable")
+    public ResponseEntity<List<ServerOutDto>> getJoinableServers(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(service.getJoinableServers(userDetails.getId()));
     }
 }
