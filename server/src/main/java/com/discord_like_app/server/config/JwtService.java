@@ -36,7 +36,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(user.getUid().toString())
-                .claim("username", user.getUserName())
+                .claim("username", user.getUsername())
                 .claim("mail", user.getEmail())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expirationTime))
@@ -61,7 +61,7 @@ public class JwtService {
         return extractAllClaims(token).get("mail", String.class);
     }
 
-    public String extractUserName(String token) {
+    public String extractUsername(String token) {
         return extractAllClaims(token).get("username", String.class);
     }
 

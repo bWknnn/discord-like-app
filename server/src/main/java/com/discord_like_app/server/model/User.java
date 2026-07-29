@@ -21,9 +21,9 @@ import java.util.UUID;
 public class User {
     @Id
     @UuidGenerator
-    private UUID uid;
+    private UUID userUid;
 
-    private String userName;
+    private String username;
 
     @Column(unique = true, nullable = false)
     private String email;

@@ -60,7 +60,7 @@ export default function ServerList({ onSelectServer }) {
     }
 
     try {
-      const server = await createServer(trimmedServerName, user?.userName || "");
+      const server = await createServer(trimmedServerName, user?.uid || "");
 
       await addMember(server.uid);
 
@@ -282,7 +282,7 @@ export default function ServerList({ onSelectServer }) {
 
         <footer className="flex flex-col gap-1 bg-bg-header border-t border-border-dark p-3 mt-auto mb-2 rounded-md">
           <span className="font-mono text-sm text-accent">
-            {user?.userName}
+            {user?.username}
           </span>
 
           <div className="flex justify-between">

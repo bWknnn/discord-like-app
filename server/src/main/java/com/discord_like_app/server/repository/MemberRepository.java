@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, UUID> {
-    boolean existsByUserUidAndServerUid(UUID userUid, UUID serverUid);
+    boolean existsByUserUserUidAndServerServerUid(UUID userUid, UUID serverUid);
 }

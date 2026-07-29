@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 public class UserOutDto {
     private UUID uid;
-    private String userName;
+    private String username;
     private String email;
 
     public static UserOutDto fromEntity(User user) {
@@ -21,8 +21,8 @@ public class UserOutDto {
             return null;
         }
         return UserOutDto.builder()
-                .uid(user.getUid())
-                .userName(user.getUserName())
+                .uid(user.getUserUid())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .build();
     }

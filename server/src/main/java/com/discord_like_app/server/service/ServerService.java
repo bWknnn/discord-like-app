@@ -20,7 +20,8 @@ public class ServerService {
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
 
-    public ServerService(ServerRepository serverRepository, MemberRepository memberRepository, UserRepository userRepository) {
+    public ServerService(ServerRepository serverRepository, MemberRepository memberRepository,
+            UserRepository userRepository) {
         this.serverRepository = serverRepository;
         this.memberRepository = memberRepository;
         this.userRepository = userRepository;
@@ -30,13 +31,13 @@ public class ServerService {
     public ServerOutDto createServer(ServerInDto serverInDto) {
         Server server = Server.builder()
                 .serverName(serverInDto.getServerName())
-                .owner(serverInDto.getOwner())
+                .ownerUid(serverInDto.getOwnerUid())
                 .build();
 
         Server savedServer = serverRepository.save(server);
 
-        if (serverInDto.getOwner() != null && !serverInDto.getOwner().isBlank()) {
-            userRepository.findByUserName(serverInDto.getOwner()).ifPresent(user -> {
+        if (serverInDto.getOwnerUid() != null && !serverInDto.getOwnerUid().isBlank()) {
+            userRepository.findById(UUID.fromString(serverInDto.getOwnerUid())).ifPresent(user -> {
                 Member member = Member.builder()
                         .user(user)
                         .server(savedServer)
@@ -46,7 +47,7 @@ public class ServerService {
         }
 
         return ServerOutDto.builder()
-                .uid(savedServer.getUid())
+                .uid(savedServer.getServerUid())
                 .serverName(savedServer.getServerName())
                 .build();
     }
@@ -55,7 +56,7 @@ public class ServerService {
         List<Server> servers = serverRepository.findServersByUserId(userId);
         return servers.stream()
                 .map(s -> ServerOutDto.builder()
-                        .uid(s.getUid())
+                        .uid(s.getServerUid())
                         .serverName(s.getServerName())
                         .build())
                 .toList();
@@ -65,7 +66,7 @@ public class ServerService {
         List<Server> servers = serverRepository.findAvailableServersForUser(userId);
         return servers.stream()
                 .map(s -> ServerOutDto.builder()
-                        .uid(s.getUid())
+                        .uid(s.getServerUid())
                         .serverName(s.getServerName())
                         .build())
                 .toList();

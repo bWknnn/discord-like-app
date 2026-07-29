@@ -16,9 +16,9 @@ import java.util.UUID;
 public class Message {
     @Id
     @UuidGenerator
-    private UUID uid;
+    private UUID messageUid;
     private String content;
-    private String author;
+    private String senderUid;
     private String channelId;
 
     @Builder.Default

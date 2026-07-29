@@ -51,7 +51,7 @@ public class UserService {
         }
 
         User user = User.builder()
-                .userName(userInDto.getUserName())
+                .username(userInDto.getUsername())
                 .email(userInDto.getEmail())
                 .hashedPass(passEncoder.encode(userInDto.getPassword()))
                 .build();

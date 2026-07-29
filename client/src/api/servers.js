@@ -1,12 +1,12 @@
 import { URL } from "./constants";
 
-export async function createServer(serverName, owner) {
+export async function createServer(serverName, user_uid) {
   try {
     const response = await fetch(`${URL}/servers/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ serverName, owner }),
+      body: JSON.stringify({ serverName, user_uid }),
     });
 
     if (!response.ok) {

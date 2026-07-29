@@ -1,0 +1,31 @@
+# Build output
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+
+# Git
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Environment
+.env
+
+# Maven wrapper jar (downloaded during build)
+.mvn/wrapper/maven-wrapper.jar
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Misc
+HELP.md
+*.md
+*.txt

@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.UUID;
 
@@ -17,12 +19,40 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Channel {
+    public enum ChannelType {
+        TEXT("text"),
+        VOICE("voice");
+
+        private final String value;
+
+        ChannelType(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static ChannelType fromValue(String value) {
+            for (ChannelType type : ChannelType.values()) {
+                if (type.value.equalsIgnoreCase(value)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Unknown enum type " + value);
+        }
+    }
+
     @Id
     @UuidGenerator
-    private UUID uid;
+    private UUID channelUid;
 
     private String name;
-    private String type;
+    
+    @Enumerated(EnumType.STRING)
+    private ChannelType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_id", nullable = false)

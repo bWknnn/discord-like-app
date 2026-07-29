@@ -11,9 +11,9 @@ import java.util.UUID;
 @Repository
 public interface ServerRepository extends JpaRepository<Server, UUID> {
 
-    @Query("SELECT s FROM Server s WHERE s.uid IN (SELECT m.server.uid FROM Member m WHERE m.user.uid = :userId)")
+    @Query("SELECT s FROM Server s WHERE s.serverUid IN (SELECT m.server.serverUid FROM Member m WHERE m.user.userUid = :userId)")
     List<Server> findServersByUserId(@Param("userId") UUID userId);
 
-    @Query("SELECT s FROM Server s WHERE s.uid NOT IN (SELECT m.server.uid FROM Member m WHERE m.user.uid = :userId)")
+    @Query("SELECT s FROM Server s WHERE s.serverUid NOT IN (SELECT m.server.serverUid FROM Member m WHERE m.user.userUid = :userId)")
     List<Server> findAvailableServersForUser(@Param("userId") UUID userId);
 }

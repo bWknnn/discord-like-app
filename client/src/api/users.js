@@ -1,12 +1,12 @@
 import { URL } from "./constants";
 
-export async function registerUser(userName, email, password) {
+export async function registerUser(username, email, password) {
   try {
     const response = await fetch(`${URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ userName, email, password }),
+      body: JSON.stringify({ username, email, password }),
     });
 
     if (!response.ok) {

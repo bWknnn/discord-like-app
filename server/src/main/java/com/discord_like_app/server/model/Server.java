@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +22,11 @@ import java.util.UUID;
 public class Server {
     @Id
     @UuidGenerator
-    private UUID uid;
+    private UUID serverUid;
 
     private String serverName;
-    private String owner;
+    @JsonProperty("owner_uid")
+    private String ownerUid;
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

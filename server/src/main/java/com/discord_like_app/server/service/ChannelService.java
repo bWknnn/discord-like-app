@@ -34,20 +34,20 @@ public class ChannelService {
         Channel savedChannel = channelRepository.save(channel);
 
         return ChannelDto.builder()
-                .uid(savedChannel.getUid())
+                .uid(savedChannel.getChannelUid())
                 .name(savedChannel.getName())
                 .type(savedChannel.getType())
-                .serverId(savedChannel.getServer().getUid())
+                .serverId(savedChannel.getServer().getServerUid())
                 .build();
     }
 
     public List<ChannelDto> getChannelsByServerId(UUID serverId){
-        List<Channel> channels = channelRepository.findByServerUid(serverId);
+        List<Channel> channels = channelRepository.findByServerServerUid(serverId);
         return channels.stream().map(c -> ChannelDto.builder()
-                .uid(c.getUid())
+                .uid(c.getChannelUid())
                 .name(c.getName())
                 .type(c.getType())
-                .serverId(c.getServer().getUid())
+                .serverId(c.getServer().getServerUid())
                 .build()).toList();
     }
 }

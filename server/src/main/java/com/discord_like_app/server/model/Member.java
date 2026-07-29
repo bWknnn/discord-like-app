@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Member {
     @Id
     @UuidGenerator
-    private UUID uid;
+    private UUID memberUid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

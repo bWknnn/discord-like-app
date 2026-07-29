@@ -24,7 +24,7 @@ public class MemberService {
     }
 
     public void addMember(UUID userId, UUID serverId) {
-        if (memberRepository.existsByUserUidAndServerUid(userId, serverId)) {
+        if (memberRepository.existsByUserUserUidAndServerServerUid(userId, serverId)) {
             return;
         }
 
