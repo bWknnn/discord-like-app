@@ -17,9 +17,9 @@ public class Message {
     @Id
     @UuidGenerator
     private UUID messageUid;
-    private String content;
+    private String text;
     private String senderUid;
-    private String channelId;
+    private String channelUid;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

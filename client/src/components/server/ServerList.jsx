@@ -17,7 +17,7 @@ import {
   getJoinedServers,
   getJoinableServers,
 } from "../../api/servers";
-import { logOut } from "../../api/users";
+import { logOut, currentUser } from "../../api/users";
 
 export default function ServerList({ onSelectServer }) {
   const [active, setActive] = useState("");
@@ -34,8 +34,6 @@ export default function ServerList({ onSelectServer }) {
   async function handleLogout() {
     try {
       await logOut();
-
-      localStorage.removeItem("user");
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
@@ -96,22 +94,14 @@ export default function ServerList({ onSelectServer }) {
   }
 
   useEffect(() => {
-    const userRaw = localStorage.getItem("user");
-
-    if (!userRaw) {
-      return;
-    }
-
-    try {
-      const parsedUser = JSON.parse(userRaw);
-      setUser(parsedUser);
+    currentUser().then((user) => {
+      if (!user) {
+        navigate("/", { replace: true });
+        return;
+      }
+      setUser(user);
       fetchJoinedServers();
-    } catch (error) {
-      console.error("Invalid user data:", error);
-
-      localStorage.removeItem("user");
-      navigate("/", { replace: true });
-    }
+    });
   }, [navigate]);
 
   return (

@@ -1,10 +1,9 @@
-package com.discord_like_app.server.dto;
+package com.discord_like_app.server.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.discord_like_app.server.model.Channel.ChannelType;
 
 import java.util.UUID;
 
@@ -12,9 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChannelDto {
+public class ServerOutDto {
     private UUID uid;
-    private String name;
-    private ChannelType type;
-    private UUID serverId;
+    private String serverName;
 }

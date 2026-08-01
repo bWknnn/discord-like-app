@@ -1,6 +1,6 @@
 package com.discord_like_app.server.service;
 
-import com.discord_like_app.server.dto.ChannelDto;
+import com.discord_like_app.server.model.dto.ChannelDto;
 import com.discord_like_app.server.model.Channel;
 import com.discord_like_app.server.model.Server;
 import com.discord_like_app.server.repository.ChannelRepository;

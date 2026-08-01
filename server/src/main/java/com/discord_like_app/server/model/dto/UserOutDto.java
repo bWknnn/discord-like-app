@@ -1,4 +1,4 @@
-package com.discord_like_app.server.dto;
+package com.discord_like_app.server.model.dto;
 
 import com.discord_like_app.server.model.User;
 import lombok.AllArgsConstructor;

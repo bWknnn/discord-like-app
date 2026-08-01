@@ -1,6 +1,6 @@
 package com.discord_like_app.server.controller;
 
-import com.discord_like_app.server.dto.ChannelDto;
+import com.discord_like_app.server.model.dto.ChannelDto;
 import com.discord_like_app.server.service.ChannelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

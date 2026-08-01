@@ -1,7 +1,7 @@
 package com.discord_like_app.server.service;
 
-import com.discord_like_app.server.dto.ServerInDto;
-import com.discord_like_app.server.dto.ServerOutDto;
+import com.discord_like_app.server.model.dto.ServerInDto;
+import com.discord_like_app.server.model.dto.ServerOutDto;
 import com.discord_like_app.server.model.Member;
 import com.discord_like_app.server.model.Server;
 import com.discord_like_app.server.repository.MemberRepository;

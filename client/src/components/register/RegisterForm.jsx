@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { registerUser, loginUser } from "../../api/users";
+import { registerUser, loginUser, currentUser } from "../../api/users";
 import { useNavigate } from "react-router";
 
 export default function RegisterForm() {
@@ -13,11 +13,11 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-
-    if (user) {
-      navigate("/app", { replace: true });
-    }
+    currentUser().then((user) => {
+      if (user) {
+        navigate("/app", { replace: true });
+      }
+    });
   }, [navigate]);
 
   async function onSubmitHandler(event) {
@@ -40,9 +40,7 @@ export default function RegisterForm() {
     }
 
     try {
-      const user = await loginUser(email, password);
-
-      localStorage.setItem("user", JSON.stringify(user));
+      await loginUser(email, password);
 
       navigate("/app", { replace: true });
     } catch (error) {

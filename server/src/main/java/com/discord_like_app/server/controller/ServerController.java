@@ -1,8 +1,8 @@
 package com.discord_like_app.server.controller;
 
 import com.discord_like_app.server.config.CustomUserDetails;
-import com.discord_like_app.server.dto.ServerInDto;
-import com.discord_like_app.server.dto.ServerOutDto;
+import com.discord_like_app.server.model.dto.ServerInDto;
+import com.discord_like_app.server.model.dto.ServerOutDto;
 import com.discord_like_app.server.service.ServerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

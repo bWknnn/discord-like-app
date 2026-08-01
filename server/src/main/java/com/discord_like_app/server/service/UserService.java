@@ -1,9 +1,9 @@
 package com.discord_like_app.server.service;
 
 import com.discord_like_app.server.config.JwtService;
-import com.discord_like_app.server.dto.AuthResponseDto;
-import com.discord_like_app.server.dto.UserInDto;
-import com.discord_like_app.server.dto.UserOutDto;
+import com.discord_like_app.server.model.dto.AuthResponseDto;
+import com.discord_like_app.server.model.dto.UserInDto;
+import com.discord_like_app.server.model.dto.UserOutDto;
 import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -17,7 +17,9 @@ export async function registerUser(username, email, password) {
     return await response.json();
   } catch (error) {
     if (error.message === "Failed to fetch") {
-      throw new Error("Unable to connect to server. Please check your connection.");
+      throw new Error(
+        "Unable to connect to server. Please check your connection.",
+      );
     }
     throw error;
   }
@@ -40,7 +42,9 @@ export async function loginUser(email, password) {
     return await response.json();
   } catch (error) {
     if (error.message === "Failed to fetch") {
-      throw new Error("Unable to connect to server. Please check your connection.");
+      throw new Error(
+        "Unable to connect to server. Please check your connection.",
+      );
     }
     throw error;
   }
@@ -58,8 +62,22 @@ export async function logOut() {
     }
   } catch (error) {
     if (error.message === "Failed to fetch") {
-      throw new Error("Unable to connect to server. Please check your connection.");
+      throw new Error(
+        "Unable to connect to server. Please check your connection.",
+      );
     }
     throw error;
+  }
+}
+
+export async function currentUser() {
+  try {
+    const response = await fetch(`${URL}/users/me`, {
+      credentials: "include",
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (err) {
+    return null;
   }
 }

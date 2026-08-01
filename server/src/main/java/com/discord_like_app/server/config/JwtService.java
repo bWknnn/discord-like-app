@@ -1,6 +1,6 @@
 package com.discord_like_app.server.config;
 
-import com.discord_like_app.server.dto.UserOutDto;
+import com.discord_like_app.server.model.dto.UserOutDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -61,6 +61,7 @@ public class JwtService {
         return extractAllClaims(token).get("mail", String.class);
     }
 
+    // no use
     public String extractUsername(String token) {
         return extractAllClaims(token).get("username", String.class);
     }

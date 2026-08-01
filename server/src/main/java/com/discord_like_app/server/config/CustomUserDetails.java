@@ -11,18 +11,18 @@ import java.util.UUID;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final UUID id;
-    private final String email;
-    private final String password;
+    private final User user;
 
     public CustomUserDetails(User user) {
-        this.id = user.getUserUid();
-        this.email = user.getEmail();
-        this.password = user.getHashedPass();
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public UUID getId() {
-        return id;
+        return user.getUserUid();
     }
 
     @Override
@@ -32,12 +32,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getHashedPass();
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return user.getEmail();
     }
 
     @Override

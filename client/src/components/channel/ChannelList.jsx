@@ -35,8 +35,12 @@ export default function ChannelList({ visible, serverId }) {
   }
 
   async function fetchChannels() {
-    const channels = await channelFetch(serverId);
-    setChannels(channels);
+    try {
+      const channels = await channelFetch(serverId);
+      setChannels(channels);
+    } catch (error) {
+      console.error("Failed to fetch channels:", error);
+    }
   }
 
   async function createChannel() {
