@@ -5,7 +5,7 @@ import Channel from "./Channel";
 import Topbar from "./Topbar";
 import { channelCreate, channelFetch } from "../../api/channels";
 
-export default function ChannelList({ visible, serverId }) {
+export default function ChannelList({ visible, serverId, onSelectChannel }) {
   const [active, setActive] = useState("");
   const [addPanel, setAddPanel] = useState(false);
   const [type, setType] = useState("text");
@@ -192,7 +192,10 @@ export default function ChannelList({ visible, serverId }) {
                   name={channel.name}
                   type={channel.type}
                   active={channel.uid === active}
-                  onClick={() => setActive(channel.uid)}
+                  onClick={() => {
+                    setActive(channel.uid);
+                    onSelectChannel?.({ id: channel.uid, type: channel.type, name: channel.name });
+                  }}
                 />
               ))}
             </div>
@@ -208,7 +211,10 @@ export default function ChannelList({ visible, serverId }) {
                   name={channel.name}
                   type={channel.type}
                   active={channel.uid === active}
-                  onClick={() => setActive(channel.uid)}
+                  onClick={() => {
+                    setActive(channel.uid);
+                    onSelectChannel?.({ id: channel.uid, type: channel.type, name: channel.name });
+                  }}
                 />
               ))}
             </div>
