@@ -1,9 +1,5 @@
 package com.discord_like_app.server.service;
 
-import com.discord_like_app.server.config.JwtService;
-import com.discord_like_app.server.model.dto.AuthResponseDto;
-import com.discord_like_app.server.model.dto.UserInDto;
-import com.discord_like_app.server.model.dto.UserOutDto;
 import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,44 +12,35 @@ public class UserService {
 
     private final UserRepository userRepo;
     private final PasswordEncoder passEncoder;
-    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepo, PasswordEncoder passEncoder, JwtService jwtService) {
+    public UserService(UserRepository userRepo, PasswordEncoder passEncoder) {
         this.userRepo = userRepo;
         this.passEncoder = passEncoder;
-        this.jwtService = jwtService;
     }
 
-    public AuthResponseDto login(String email, String rawPassword) {
+    public User login(String email, String rawPassword) {
         Optional<User> find = userRepo.findByEmail(email);
         if (find.isEmpty()) {
             throw new IllegalArgumentException("User or password is wrong!");
         }
         User user = find.get();
-        boolean match = passEncoder.matches(rawPassword, user.getHashedPass());
 
-        if (!match) {
+        if (!passEncoder.matches(rawPassword, user.getHashedPass())) {
             throw new IllegalArgumentException("User or password is wrong!");
         }
 
-        UserOutDto userOutDto = UserOutDto.fromEntity(user);
-        String token = jwtService.generateToken(userOutDto);
-
-        return AuthResponseDto.builder()
-                .token(token)
-                .user(userOutDto)
-                .build();
+        return user;
     }
 
-    public User createUser(UserInDto userInDto) {
-        if (userRepo.findByEmail(userInDto.getEmail()).isPresent()) {
+    public User createUser(String username, String email, String password) {
+        if (userRepo.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("An account with this email already exists!");
         }
 
         User user = User.builder()
-                .username(userInDto.getUsername())
-                .email(userInDto.getEmail())
-                .hashedPass(passEncoder.encode(userInDto.getPassword()))
+                .username(username)
+                .email(email)
+                .hashedPass(passEncoder.encode(password))
                 .build();
 
         return userRepo.save(user);

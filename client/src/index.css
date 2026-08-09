@@ -38,7 +38,7 @@
   --color-badge-text: #4a1010;
 }
 
-@utility add-button {
+@utility join-button {
   @apply font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
                        hover:bg-accent-hover transition-colors cursor-pointer
                        flex items-center justify-center gap-1.5;

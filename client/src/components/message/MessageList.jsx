@@ -31,7 +31,10 @@ export default function MessageList({ channel }) {
         id: Date.now(),
         content: text,
         sender: currentUser?.username,
-        time: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
+        time: new Date().toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       },
     ]);
     setInput("");
@@ -79,9 +82,10 @@ export default function MessageList({ channel }) {
             disabled={!input.trim()}
             aria-label="Send"
             className={`shrink-0 p-2 rounded-lg transition-all
-              ${input.trim()
-                ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
-                : "text-text-light/20 cursor-not-allowed"
+              ${
+                input.trim()
+                  ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
+                  : "text-text-light/20 cursor-not-allowed"
               }`}
           >
             <FiSend size={16} />

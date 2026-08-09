@@ -214,9 +214,9 @@ export default function ServerList({ onSelectServer }) {
             Create Server
           </button>
 
-          <button type="button" className="add-button" onClick={getAllServers}>
+          <button type="button" className="join-button" onClick={getAllServers}>
             <FiPlus size={16} />
-            Add Server
+            Join Server
           </button>
 
           <div className="relative">

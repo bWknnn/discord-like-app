@@ -1,7 +1,5 @@
 package com.discord_like_app.server.service;
 
-import com.discord_like_app.server.model.dto.ServerInDto;
-import com.discord_like_app.server.model.dto.ServerOutDto;
 import com.discord_like_app.server.model.Member;
 import com.discord_like_app.server.model.Server;
 import com.discord_like_app.server.repository.MemberRepository;
@@ -28,16 +26,16 @@ public class ServerService {
     }
 
     @Transactional
-    public ServerOutDto createServer(ServerInDto serverInDto) {
+    public Server createServer(String serverName, String ownerUid) {
         Server server = Server.builder()
-                .serverName(serverInDto.getServerName())
-                .ownerUid(serverInDto.getOwnerUid())
+                .serverName(serverName)
+                .ownerUid(ownerUid)
                 .build();
 
         Server savedServer = serverRepository.save(server);
 
-        if (serverInDto.getOwnerUid() != null && !serverInDto.getOwnerUid().isBlank()) {
-            userRepository.findById(UUID.fromString(serverInDto.getOwnerUid())).ifPresent(user -> {
+        if (ownerUid != null && !ownerUid.isBlank()) {
+            userRepository.findById(UUID.fromString(ownerUid)).ifPresent(user -> {
                 Member member = Member.builder()
                         .user(user)
                         .server(savedServer)
@@ -46,29 +44,14 @@ public class ServerService {
             });
         }
 
-        return ServerOutDto.builder()
-                .uid(savedServer.getServerUid())
-                .serverName(savedServer.getServerName())
-                .build();
+        return savedServer;
     }
 
-    public List<ServerOutDto> getJoinedServers(UUID userId) {
-        List<Server> servers = serverRepository.findServersByUserId(userId);
-        return servers.stream()
-                .map(s -> ServerOutDto.builder()
-                        .uid(s.getServerUid())
-                        .serverName(s.getServerName())
-                        .build())
-                .toList();
+    public List<Server> getJoinedServers(UUID userId) {
+        return serverRepository.findServersByUserId(userId);
     }
 
-    public List<ServerOutDto> getJoinableServers(UUID userId) {
-        List<Server> servers = serverRepository.findAvailableServersForUser(userId);
-        return servers.stream()
-                .map(s -> ServerOutDto.builder()
-                        .uid(s.getServerUid())
-                        .serverName(s.getServerName())
-                        .build())
-                .toList();
+    public List<Server> getJoinableServers(UUID userId) {
+        return serverRepository.findAvailableServersForUser(userId);
     }
 }

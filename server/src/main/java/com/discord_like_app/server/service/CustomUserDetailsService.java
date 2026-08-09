@@ -3,6 +3,8 @@ package com.discord_like_app.server.service;
 import com.discord_like_app.server.config.CustomUserDetails;
 import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.UserRepository;
+import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,13 +20,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
+    @NullMarked public UserDetails loadUserByUsername(@Nullable String email) throws UsernameNotFoundException {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
-                                "User bulunamadı: " + email
+                                "An error occurred: " + email
                         )
                 );
 

@@ -72,7 +72,7 @@ export async function logOut() {
 
 export async function currentUser() {
   try {
-    const response = await fetch(`${URL}/users/me`, {
+    const response = await fetch(`${URL}/auth/me`, {
       credentials: "include",
     });
     if (!response.ok) return null;

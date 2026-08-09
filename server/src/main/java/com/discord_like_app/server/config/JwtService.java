@@ -1,6 +1,6 @@
 package com.discord_like_app.server.config;
 
-import com.discord_like_app.server.model.dto.UserOutDto;
+import com.discord_like_app.server.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -31,11 +31,11 @@ public class JwtService {
         this.expirationTime = expirationTime;
     }
 
-    public String generateToken(UserOutDto user) {
+    public String generateToken(User user) {
         Date now = new Date();
 
         return Jwts.builder()
-                .subject(user.getUid().toString())
+                .subject(user.getUserUid().toString())
                 .claim("username", user.getUsername())
                 .claim("mail", user.getEmail())
                 .issuedAt(now)

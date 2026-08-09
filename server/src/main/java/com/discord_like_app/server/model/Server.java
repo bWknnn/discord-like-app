@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,6 @@ public class Server {
     private UUID serverUid;
 
     private String serverName;
-    @JsonProperty("owner_uid")
     private String ownerUid;
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true)
