@@ -2,6 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { FiSend } from "react-icons/fi";
 import Message from "./Message";
 import { currentUser as fetchCurrentUser } from "../../api/users";
+import {
+  connect,
+  subscribe,
+  sendMessage as sendWsMessage,
+  disconnect,
+} from "../../api/websocket";
 
 export default function MessageList({ channel }) {
   const [messages, setMessages] = useState([]);
@@ -17,26 +23,39 @@ export default function MessageList({ channel }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    if (!channel) return;
+
+    fetch(`http://localhost:8080/api/messages/${channel.id}`, {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(setMessages);
+
+    connect(() => {
+      subscribe(channel.id, (newMsg) => {
+        setMessages((prev) => [...prev, newMsg]);
+      });
+    });
+
+    return () => disconnect();
+  }, [channel]);
+
   if (!channel || channel.type !== "text") {
     return null;
   }
 
   function sendMessage() {
     const text = input.trim();
-    if (!text) return;
+    if (!text || !currentUser) return;
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        content: text,
-        sender: currentUser?.username,
-        time: new Date().toLocaleTimeString("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      },
-    ]);
+    sendWsMessage({
+      text: text,
+      senderUid: currentUser.uid,
+      senderUsername: currentUser.username,
+      channelUid: channel.id,
+    });
+
     setInput("");
   }
 
@@ -52,10 +71,10 @@ export default function MessageList({ channel }) {
       <div className="flex-1 overflow-y-scroll px-6 py-4 flex flex-col gap-2">
         {messages.map((msg, idx) => {
           const prev = messages[idx - 1];
-          const showHeader = !prev || prev.sender !== msg.sender;
+          const showHeader = !prev || prev.senderUsername !== msg.senderUsername;
           return (
             <Message
-              key={msg.id}
+              key={msg.messageUid}
               msg={msg}
               currentUser={currentUser}
               showHeader={showHeader}
@@ -82,10 +101,9 @@ export default function MessageList({ channel }) {
             disabled={!input.trim()}
             aria-label="Send"
             className={`shrink-0 p-2 rounded-lg transition-all
-              ${
-                input.trim()
-                  ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
-                  : "text-text-light/20 cursor-not-allowed"
+              ${input.trim()
+                ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
+                : "text-text-light/20 cursor-not-allowed"
               }`}
           >
             <FiSend size={16} />

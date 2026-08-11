@@ -1,5 +1,5 @@
 export default function Message({ msg, currentUser, showHeader }) {
-  const isOwn = msg.sender === currentUser?.username;
+  const isOwn = msg.senderUid === currentUser?.uid;
 
   return (
     <div className={`flex gap-3 ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
@@ -12,7 +12,7 @@ export default function Message({ msg, currentUser, showHeader }) {
                 : "bg-avatar-bg text-accent border border-border-dark"
               }`}
           >
-            {msg.sender?.[0]?.toUpperCase()}
+            {msg.senderUsername?.[0]?.toUpperCase()}
           </div>
         ) : (
           <div className="w-8" />
@@ -23,10 +23,18 @@ export default function Message({ msg, currentUser, showHeader }) {
         {showHeader && (
           <div className={`flex items-baseline gap-2 ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
             <span className="font-mono text-xs font-semibold text-accent">
-              {msg.sender}
+              {msg.senderUsername}
             </span>
             <span className="font-mono text-[10px] text-text-light/30">
-              {msg.time}
+              {(() => {
+                const date = new Date(msg.createdAt);
+                const today = new Date();
+                const isToday = date.toDateString() === today.toDateString();
+                return isToday
+                  ? date.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+                  : date.toLocaleDateString("tr-TR", { day: "numeric", month: "short" })
+                  + " " + date.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
+              })()}
             </span>
           </div>
         )}
@@ -38,7 +46,7 @@ export default function Message({ msg, currentUser, showHeader }) {
               : "bg-bg-card text-text-light border border-border-dark rounded-tl-sm"
             }`}
         >
-          {msg.content}
+          {msg.text}
         </div>
       </div>
     </div>

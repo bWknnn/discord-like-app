@@ -16,8 +16,8 @@ public class MessageService {
         this.messageRepo = messageRepo;
     }
 
-    public List<Message> getAllMessages() {
-        return messageRepo.findAll();
+    public List<Message> getMessagesByChannel(String channelUid) {
+        return messageRepo.findByChannelUidOrderByCreatedAtAsc(channelUid);
     }
 
     public Message createMessage(Message message) {

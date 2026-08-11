@@ -1,4 +1,17 @@
 services:
+  frontend:
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+    container_name: discord-like-app-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
   backend:
     build:
       context: .
