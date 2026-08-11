@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { FiSend } from "react-icons/fi";
 import Message from "./Message";
 import { currentUser as fetchCurrentUser } from "../../api/users";
+import { URL } from "../../api/constants";
 import {
   connect,
   subscribe,
@@ -26,7 +27,7 @@ export default function MessageList({ channel }) {
   useEffect(() => {
     if (!channel) return;
 
-    fetch(`http://localhost:8080/api/messages/${channel.id}`, {
+    fetch(`${URL}/messages/${channel.id}`, {
       credentials: "include",
     })
       .then((res) => res.json())

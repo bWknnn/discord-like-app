@@ -1,11 +1,13 @@
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
 
+import { WS_URL } from "./constants";
+
 let stompClient = null;
 
 export function connect(onConnected) {
   stompClient = new Client({
-    webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+    webSocketFactory: () => new SockJS(WS_URL),
     reconnectDelay: 5000,
     onConnect: () => {
       console.log("WebSocket connected!");
