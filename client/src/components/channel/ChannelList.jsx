@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import { FiPlus, FiHash, FiVolume2, FiX } from "react-icons/fi";
 import Channel from "./Channel";
 import Topbar from "./Topbar";
-import { channelCreate, channelFetch } from "../../api/channels";
+import { channelFetch } from "../../api/channels";
+import { connect, subscribeToServer, sendChannel } from "../../api/websocket";
 
 export default function ChannelList({ visible, serverId, onSelectChannel }) {
   const [active, setActive] = useState("");
@@ -13,9 +14,23 @@ export default function ChannelList({ visible, serverId, onSelectChannel }) {
   const [channels, setChannels] = useState([]);
 
   useEffect(() => {
-    if (visible && serverId) {
-      fetchChannels();
-    }
+    if (!visible || !serverId) return;
+
+    fetchChannels();
+
+    let subscription = null;
+    connect(() => {
+      subscription = subscribeToServer(serverId, (newChannel) => {
+        setChannels((prev) => {
+          if (prev.some((c) => c.uid === newChannel.uid)) return prev;
+          return [...prev, newChannel];
+        });
+      });
+    });
+
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, [serverId, visible]);
 
   if (!visible) return null;
@@ -43,14 +58,9 @@ export default function ChannelList({ visible, serverId, onSelectChannel }) {
     }
   }
 
-  async function createChannel() {
-    try {
-      const channel = await channelCreate(name, type, serverId);
-      closePanel();
-      await fetchChannels();
-    } catch (err) {
-      console.log(err);
-    }
+  function createChannel() {
+    sendChannel({ name, type, serverId });
+    closePanel();
   }
 
   return (
@@ -89,11 +99,10 @@ export default function ChannelList({ visible, serverId, onSelectChannel }) {
                     <button
                       type="button"
                       onClick={() => setType("text")}
-                      className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-md border text-sm transition-colors cursor-pointer ${
-                        type === "text"
+                      className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-md border text-sm transition-colors cursor-pointer ${type === "text"
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-border-dark text-text-light/60 hover:text-accent hover:border-accent/40"
-                      }`}
+                        }`}
                     >
                       <FiHash size={14} />
                       text
@@ -102,11 +111,10 @@ export default function ChannelList({ visible, serverId, onSelectChannel }) {
                     <button
                       type="button"
                       onClick={() => setType("voice")}
-                      className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-md border text-sm transition-colors cursor-pointer ${
-                        type === "voice"
+                      className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-md border text-sm transition-colors cursor-pointer ${type === "voice"
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-border-dark text-text-light/60 hover:text-accent hover:border-accent/40"
-                      }`}
+                        }`}
                     >
                       <FiVolume2 size={14} />
                       voice
@@ -152,11 +160,10 @@ export default function ChannelList({ visible, serverId, onSelectChannel }) {
                   type="button"
                   onClick={createChannel}
                   disabled={!name.trim()}
-                  className={`px-3 py-1.5 text-sm rounded-md font-bold transition-colors ${
-                    name.trim()
+                  className={`px-3 py-1.5 text-sm rounded-md font-bold transition-colors ${name.trim()
                       ? "bg-accent text-bg-card hover:bg-accent/90 cursor-pointer"
                       : "bg-border-dark text-text-light/30 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   create
                 </button>

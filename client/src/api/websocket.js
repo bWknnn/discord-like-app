@@ -39,6 +39,24 @@ export function sendMessage(message) {
   });
 }
 
+export function subscribeToServer(serverId, onChannelReceived) {
+  if (!stompClient || !stompClient.connected) return null;
+
+  return stompClient.subscribe(`/servers/${serverId}/channels`, (message) => {
+    const parsed = JSON.parse(message.body);
+    onChannelReceived(parsed);
+  });
+}
+
+export function sendChannel(channel) {
+  if (!stompClient || !stompClient.connected) return;
+
+  stompClient.publish({
+    destination: "/send/channel",
+    body: JSON.stringify(channel),
+  });
+}
+
 export function disconnect() {
   if (stompClient) {
     stompClient.deactivate();
