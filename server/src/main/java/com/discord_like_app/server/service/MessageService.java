@@ -5,7 +5,6 @@ import com.discord_like_app.server.model.Message;
 import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.ChannelRepository;
 import com.discord_like_app.server.repository.MessageRepository;
-import com.discord_like_app.server.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
