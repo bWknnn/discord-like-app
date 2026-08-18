@@ -19,7 +19,6 @@ public class Message {
     private UUID messageUid;
     private String text;
     private String senderUid;
-    private String senderUsername;
     private String channelUid;
 
     @Builder.Default

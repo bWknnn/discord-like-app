@@ -22,12 +22,12 @@ public class Member {
     private UUID memberUid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_uid", nullable = false)
     @ToString.Exclude
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "server_id", nullable = false)
+    @JoinColumn(name = "server_uid", nullable = false)
     @ToString.Exclude
     private Server server;
 }

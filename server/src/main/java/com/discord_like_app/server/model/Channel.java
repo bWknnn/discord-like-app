@@ -28,7 +28,7 @@ public class Channel {
     private ChannelType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "server_id", nullable = false)
+    @JoinColumn(name = "server_uid", nullable = false)
     @ToString.Exclude
     private Server server;
 }

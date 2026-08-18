@@ -4,10 +4,8 @@ import Message from "./Message";
 import { currentUser as fetchCurrentUser } from "../../api/users";
 import { URL } from "../../api/constants";
 import {
-  connect,
   subscribe,
   sendMessage as sendWsMessage,
-  disconnect,
 } from "../../api/websocket";
 
 export default function MessageList({ channel }) {
@@ -33,13 +31,13 @@ export default function MessageList({ channel }) {
       .then((res) => res.json())
       .then(setMessages);
 
-    connect(() => {
-      subscribe(channel.id, (newMsg) => {
-        setMessages((prev) => [...prev, newMsg]);
-      });
+    const sub = subscribe(channel.id, (newMsg) => {
+      setMessages((prev) => [...prev, newMsg]);
     });
 
-    return () => disconnect();
+    return () => {
+      if (sub) sub.unsubscribe();
+    };
   }, [channel]);
 
   if (!channel || channel.type !== "text") {

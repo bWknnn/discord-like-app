@@ -28,12 +28,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserOutDto> register(@RequestBody UserInDto userInDto) {
+    public ResponseEntity<UserOutDto> register(@RequestBody UserInDto userInDto, HttpServletResponse response) {
         User savedUser = userService.createUser(
                 userInDto.getUsername(),
                 userInDto.getEmail(),
                 userInDto.getPassword()
         );
+
+        String token = jwtService.generateToken(savedUser);
+        response.addCookie(cookieUtil.createJwtCookie(token));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(UserOutDto.fromEntity(savedUser));
     }
 

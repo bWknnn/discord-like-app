@@ -6,6 +6,11 @@ import { WS_URL } from "./constants";
 let stompClient = null;
 
 export function connect(onConnected) {
+  if (stompClient?.connected) {
+    if (onConnected) onConnected();
+    return;
+  }
+
   stompClient = new Client({
     webSocketFactory: () => new SockJS(WS_URL),
     reconnectDelay: 5000,

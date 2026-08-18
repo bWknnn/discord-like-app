@@ -1,10 +1,8 @@
 package com.discord_like_app.server.controller;
 
-import com.discord_like_app.server.model.Channel;
 import com.discord_like_app.server.model.dto.ChannelDto;
 import com.discord_like_app.server.service.ChannelService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,29 +13,17 @@ import java.util.UUID;
 public class ChannelController {
 
         private final ChannelService service;
-        private final SimpMessagingTemplate messagingTemplate;
 
-        public ChannelController(ChannelService service, SimpMessagingTemplate messagingTemplate) {
+        public ChannelController(ChannelService service) {
                 this.service = service;
-                this.messagingTemplate = messagingTemplate;
         }
 
         @MessageMapping("/channel")
         public void create(ChannelDto channelDTO) {
-                Channel saved = service.createChannel(
+                service.createChannel(
                                 channelDTO.getName(),
                                 channelDTO.getType(),
                                 channelDTO.getServerId());
-                ChannelDto savedDto = ChannelDto.builder()
-                                .uid(saved.getChannelUid())
-                                .name(saved.getName())
-                                .type(saved.getType())
-                                .serverId(saved.getServer().getServerUid())
-                                .build();
-
-                messagingTemplate.convertAndSend(
-                                "/servers/" + saved.getServer().getServerUid() + "/channels",
-                                savedDto);
         }
 
         @GetMapping("/get/{serverId}")

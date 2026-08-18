@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { registerUser, loginUser, currentUser } from "../../api/users";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
@@ -28,12 +29,16 @@ export default function RegisterForm() {
       try {
         await registerUser(username, email, password);
 
+        toast.success("Register successfull, welcome!");
         setSuccess(true);
         setUsername("");
         setEmail("");
         setPassword("");
+        navigate("/app", { replace: true });
       } catch (error) {
-        setErrorMessage(error.message || "Registration failed. Please try again.");
+        setErrorMessage(
+          error.message || "Registration failed. Please try again.",
+        );
       }
 
       return;
@@ -42,9 +47,12 @@ export default function RegisterForm() {
     try {
       await loginUser(email, password);
 
+      toast.success("Login successfull!");
       navigate("/app", { replace: true });
     } catch (error) {
-      setErrorMessage(error.message || "Login failed. Please check your credentials.");
+      setErrorMessage(
+        error.message || "Login failed. Please check your credentials.",
+      );
     }
   }
 

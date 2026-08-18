@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ServerList from "../server/ServerList";
 import ChannelList from "../channel/ChannelList";
 import MessageList from "../message/MessageList";
+import { connect, disconnect } from "../../api/websocket";
 
 export default function MainPage() {
   const [selectedServerId, setSelectedServerId] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
+
+  useEffect(() => {
+    connect();
+    return () => disconnect();
+  }, []);
 
   function handleSelectServer(serverId) {
     setSelectedServerId(serverId);
