@@ -3,10 +3,7 @@ import { FiSend } from "react-icons/fi";
 import Message from "./Message";
 import { currentUser as fetchCurrentUser } from "../../api/users";
 import { URL } from "../../api/constants";
-import {
-  subscribe,
-  sendMessage as sendWsMessage,
-} from "../../api/websocket";
+import { subscribe, sendMessage as sendWsMessage } from "../../api/websocket";
 
 export default function MessageList({ channel }) {
   const [messages, setMessages] = useState([]);
@@ -48,12 +45,7 @@ export default function MessageList({ channel }) {
     const text = input.trim();
     if (!text || !currentUser) return;
 
-    sendWsMessage({
-      text: text,
-      senderUid: currentUser.uid,
-      senderUsername: currentUser.username,
-      channelUid: channel.id,
-    });
+    sendWsMessage(channel.id, text);
 
     setInput("");
   }
@@ -70,7 +62,8 @@ export default function MessageList({ channel }) {
       <div className="flex-1 overflow-y-scroll px-6 py-4 flex flex-col gap-2">
         {messages.map((msg, idx) => {
           const prev = messages[idx - 1];
-          const showHeader = !prev || prev.senderUsername !== msg.senderUsername;
+          const showHeader =
+            !prev || prev.sender.userUid !== msg.sender.userUid;
           return (
             <Message
               key={msg.messageUid}
@@ -100,9 +93,10 @@ export default function MessageList({ channel }) {
             disabled={!input.trim()}
             aria-label="Send"
             className={`shrink-0 p-2 rounded-lg transition-all
-              ${input.trim()
-                ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
-                : "text-text-light/20 cursor-not-allowed"
+              ${
+                input.trim()
+                  ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
+                  : "text-text-light/20 cursor-not-allowed"
               }`}
           >
             <FiSend size={16} />

@@ -24,8 +24,11 @@ public class Server {
     private UUID serverUid;
 
     private String serverName;
+
+    // Burada relation lazım
     private String ownerUid;
 
+    // Bak buraya
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default

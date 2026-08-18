@@ -35,12 +35,12 @@ export function subscribe(channelUid, onMessageReceived) {
   });
 }
 
-export function sendMessage(message) {
+export function sendMessage(channelUid, text) {
   if (!stompClient || !stompClient.connected) return;
 
   stompClient.publish({
-    destination: "/send/message",
-    body: JSON.stringify(message),
+    destination: `/send/messages/${channelUid}`,
+    body: text,
   });
 }
 

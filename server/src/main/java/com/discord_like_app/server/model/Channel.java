@@ -10,6 +10,7 @@ import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "channels")
@@ -27,6 +28,7 @@ public class Channel {
     @Enumerated(EnumType.STRING)
     private ChannelType type;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_uid", nullable = false)
     @ToString.Exclude

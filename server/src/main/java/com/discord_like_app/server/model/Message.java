@@ -6,6 +6,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "messages")
@@ -18,9 +19,19 @@ public class Message {
     @UuidGenerator
     private UUID messageUid;
     private String text;
-    private String senderUid;
-    private String channelUid;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_uid", nullable = false)
+    @ToString.Exclude
+    private User sender;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_uid", nullable = false)
+    @ToString.Exclude
+    private Channel channel;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
 }

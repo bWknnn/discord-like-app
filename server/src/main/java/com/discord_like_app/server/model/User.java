@@ -11,6 +11,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -27,8 +28,11 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @JsonIgnore
     private String hashedPass;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
