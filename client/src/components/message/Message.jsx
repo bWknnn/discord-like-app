@@ -32,7 +32,11 @@ export default function Message({ msg, currentUser, showHeader }) {
             </span>
             <span className="font-mono text-[10px] text-text-light/30">
               {(() => {
-                const date = new Date(msg.createdAt);
+                let dateStr = msg.createdAt;
+                if (typeof dateStr === 'string' && !dateStr.endsWith('Z')) {
+                  dateStr += 'Z';
+                }
+                const date = new Date(dateStr);
                 const today = new Date();
                 const isToday = date.toDateString() === today.toDateString();
                 const userLocale = navigator.language || undefined;
