@@ -7,6 +7,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.Instant;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "messages")
@@ -32,6 +33,7 @@ public class Message {
     private Channel channel;
 
     @Builder.Default
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant createdAt = Instant.now();
 
 }

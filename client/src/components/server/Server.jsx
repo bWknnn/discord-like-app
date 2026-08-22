@@ -2,7 +2,7 @@ export default function Server({ name, active, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`w-full flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-colors duration-150
+      className={`w-full flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-colors duration-150 select-none
         ${
           active
             ? "bg-accent/10 border-l-2 border-accent hover:bg-accent/15"

@@ -6,7 +6,7 @@ import Topbar from "./Topbar";
 import { channelFetch } from "../../api/channels";
 import { subscribeToServer, sendChannel } from "../../api/websocket";
 
-export default function ChannelList({ visible, serverId, onSelectChannel }) {
+export default function ChannelList({ visible, serverId, onSelectChannel, activeVoiceChannelId, voiceUsers }) {
   const [active, setActive] = useState("");
   const [addPanel, setAddPanel] = useState(false);
   const [type, setType] = useState("text");
@@ -210,16 +210,31 @@ export default function ChannelList({ visible, serverId, onSelectChannel }) {
               <Topbar name="Voice" />
 
               {voiceChannels.map((channel) => (
-                <Channel
-                  key={channel.uid}
-                  name={channel.name}
-                  type={channel.type}
-                  active={channel.uid === active}
-                  onClick={() => {
-                    setActive(channel.uid);
-                    onSelectChannel?.({ id: channel.uid, type: channel.type, name: channel.name });
-                  }}
-                />
+                <div key={channel.uid}>
+                  <Channel
+                    name={channel.name}
+                    type={channel.type}
+                    active={activeVoiceChannelId === channel.uid}
+                    onClick={() => {
+                      onSelectChannel?.({ id: channel.uid, type: channel.type, name: channel.name });
+                    }}
+                  />
+                  {/* Connected users under voice channel */}
+                  {activeVoiceChannelId === channel.uid && voiceUsers?.length > 0 && (
+                    <div className="ml-5 flex flex-col gap-0.5 mt-0.5 select-none">
+                      {voiceUsers.map((u) => (
+                        <div key={u.uid} className="flex items-center gap-2 px-2 py-1 rounded-md">
+                          <div className="w-5 h-5 rounded-full bg-accent text-bg-main flex items-center justify-center text-[10px] font-bold font-mono shrink-0">
+                            {u.username?.[0]?.toUpperCase()}
+                          </div>
+                          <span className="font-mono text-[11px] text-text-light/60 truncate">
+                            {u.username}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}
