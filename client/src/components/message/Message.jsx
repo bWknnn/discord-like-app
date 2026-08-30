@@ -7,10 +7,9 @@ export default function Message({ msg, currentUser, showHeader }) {
         {showHeader ? (
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-mono
-              ${
-                isOwn
-                  ? "bg-accent text-bg-main"
-                  : "bg-avatar-bg text-accent border border-border-dark"
+              ${isOwn
+                ? "bg-accent text-bg-main"
+                : "bg-avatar-bg text-accent border border-border-dark"
               }`}
           >
             {msg.sender.username?.[0]?.toUpperCase()}
@@ -33,8 +32,11 @@ export default function Message({ msg, currentUser, showHeader }) {
             <span className="font-mono text-[10px] text-text-light/30">
               {(() => {
                 let dateStr = msg.createdAt;
-                if (typeof dateStr === 'string' && !dateStr.endsWith('Z')) {
-                  dateStr += 'Z';
+                if (typeof dateStr === 'string') {
+                  dateStr = dateStr.replace(/\[.*?\]$/, '');
+                  if (!/(Z|[+-]\d{2}:?\d{2})$/.test(dateStr)) {
+                    dateStr += 'Z';
+                  }
                 }
                 const date = new Date(dateStr);
                 const today = new Date();
@@ -42,29 +44,28 @@ export default function Message({ msg, currentUser, showHeader }) {
                 const userLocale = navigator.language || undefined;
                 return isToday
                   ? date.toLocaleTimeString(userLocale, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
                   : date.toLocaleDateString(userLocale, {
-                      day: "numeric",
-                      month: "short",
-                    }) +
-                      " " +
-                      date.toLocaleTimeString(userLocale, {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
+                    day: "numeric",
+                    month: "short",
+                  }) +
+                  " " +
+                  date.toLocaleTimeString(userLocale, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
               })()}
             </span>
           </div>
         )}
 
         <div
-          className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-            ${
-              isOwn
-                ? "bg-accent text-bg-main rounded-tr-sm"
-                : "bg-bg-card text-text-light border border-border-dark rounded-tl-sm"
+          className={`px-3 py-1.5 rounded-xl text-sm leading-relaxed
+            ${isOwn
+              ? "bg-accent text-bg-main rounded-tr-sm"
+              : "bg-bg-card text-text-light border border-border-dark rounded-tl-sm"
             }`}
         >
           {msg.text}

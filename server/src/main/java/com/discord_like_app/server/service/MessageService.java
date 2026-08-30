@@ -15,35 +15,35 @@ import java.util.UUID;
 @Service
 public class MessageService {
 
-    private final MessageRepository messageRepo;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final ChannelRepository channelRepository;
+        private final MessageRepository messageRepo;
+        private final SimpMessagingTemplate messagingTemplate;
+        private final ChannelRepository channelRepository;
 
-    public MessageService(MessageRepository messageRepo, SimpMessagingTemplate messagingTemplate,
-            ChannelRepository channelRepository) {
-        this.messageRepo = messageRepo;
-        this.messagingTemplate = messagingTemplate;
-        this.channelRepository = channelRepository;
-    }
+        public MessageService(MessageRepository messageRepo, SimpMessagingTemplate messagingTemplate,
+                        ChannelRepository channelRepository) {
+                this.messageRepo = messageRepo;
+                this.messagingTemplate = messagingTemplate;
+                this.channelRepository = channelRepository;
+        }
 
-    public List<Message> getMessagesByChannel(String channelUid) {
-        return messageRepo.findByChannelUidWithSender(UUID.fromString(channelUid));
-    }
+        public List<Message> getMessagesByChannel(String channelUid) {
+                return messageRepo.findByChannelUidWithSender(UUID.fromString(channelUid));
+        }
 
-    public void createMessage(String channelUid, String text, User user) {
-        Channel channel = channelRepository.findById(UUID.fromString(channelUid))
-                .orElseThrow(() -> new EntityNotFoundException("Channel not found: " + channelUid));
-        Message message = Message.builder()
-                .text(text)
-                .sender(user)
-                .channel(channel)
-                .build();
+        public void createMessage(String channelUid, String text, User user) {
+                Channel channel = channelRepository.findById(UUID.fromString(channelUid))
+                                .orElseThrow(() -> new EntityNotFoundException("Channel not found: " + channelUid));
+                Message message = Message.builder()
+                                .text(text)
+                                .sender(user)
+                                .channel(channel)
+                                .build();
 
-        Message saved = messageRepo.save(message);
+                Message saved = messageRepo.save(message);
 
-        messagingTemplate.convertAndSend(
-                "/channels/" + saved.getChannel().getChannelUid(),
-                saved);
-    }
+                messagingTemplate.convertAndSend(
+                                "/channels/" + saved.getChannel().getChannelUid(),
+                                saved);
+        }
 
 }

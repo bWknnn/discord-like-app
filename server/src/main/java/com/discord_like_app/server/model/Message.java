@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,6 +34,6 @@ public class Message {
 
     @Builder.Default
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Instant createdAt = Instant.now();
+    private ZonedDateTime createdAt = ZonedDateTime.now();
 
 }

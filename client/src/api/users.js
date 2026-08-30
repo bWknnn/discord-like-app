@@ -77,7 +77,7 @@ export async function currentUser() {
     });
     if (!response.ok) return null;
     return await response.json();
-  } catch (err) {
+  } catch {
     return null;
   }
 }

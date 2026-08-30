@@ -25,10 +25,11 @@ public class Server {
 
     private String serverName;
 
-    // Burada relation lazım
-    private String ownerUid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_uid", nullable = false)
+    @ToString.Exclude
+    private User owner;
 
-    // Bak buraya
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default

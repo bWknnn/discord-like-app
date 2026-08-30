@@ -1,18 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #2d2c2d;
   border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #222222;
 }
 
 @theme {
+  /* Font Ailesi */
+  --font-sans: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Lexend", ui-sans-serif, system-ui, sans-serif;
+
   /* Arka Planlar */
   --color-bg-main: #121116;
   --color-bg-card: #1c1b22;
@@ -29,8 +36,10 @@
   --color-accent-hover: #d4ff66;
 
   /* Yeni Link Renkleri */
-  --color-link: #22c55e; /* 1 tık koyulaştırılmış yeşil (Tailwind green-500) */
-  --color-link-hover: #4ade80; /* Üzerine gelince parlayan hali (eski ana rengin, Tailwind green-400) */
+  --color-link: #22c55e;
+  /* 1 tık koyulaştırılmış yeşil (Tailwind green-500) */
+  --color-link-hover: #4ade80;
+  /* Üzerine gelince parlayan hali (eski ana rengin, Tailwind green-400) */
 
   --color-avatar-bg: #2a2933;
   --color-online: #4ade80;
@@ -38,23 +47,31 @@
   --color-badge-text: #4a1010;
 }
 
+* {
+  font-family: "Lexend", sans-serif !important;
+}
+
 @utility join-button {
-  @apply font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-accent-hover transition-colors cursor-pointer
-                       flex items-center justify-center gap-1.5;
+  @apply font-mono text-sm bg-accent text-bg-main font-semibold py-2.5 rounded hover:bg-accent-hover transition-colors cursor-pointer flex items-center justify-center gap-1.5;
 }
 
 @utility create-button {
-  @apply font-mono text-sm bg-link text-bg-main font-semibold py-2.5 rounded
-                       hover:bg-link-hover transition-colors cursor-pointer
-                       flex items-center justify-center gap-1.5 my-auto;
+  @apply font-mono text-sm bg-link text-bg-main font-semibold py-2.5 rounded hover:bg-link-hover transition-colors cursor-pointer flex items-center justify-center gap-1.5 my-auto;
 }
 
 @utility input {
-  @apply w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5
-                         focus:outline-none focus:border-accent transition-colors;
+  @apply w-full bg-transparent border-0 border-b border-border-dark text-text-light py-1.5 focus:outline-none focus:border-accent transition-colors;
 }
 
 @utility glow {
-  @apply shadow-[0_0_20px_rgba(198,255,61,0.15)];
+  box-shadow: 0 0 20px rgba(198, 255, 61, 0.15);
+}
+
+@keyframes border-flow {
+  0% { background-position: 200% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-border-flow {
+  animation: border-flow 1.5s linear infinite;
 }

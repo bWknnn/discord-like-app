@@ -11,61 +11,66 @@ export default function MainPage() {
   const [activeTextChannel, setActiveTextChannel] = useState(null);
   const [activeVoiceChannel, setActiveVoiceChannel] = useState(null);
   const [user, setUser] = useState(null);
+  const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
-    connect();
+    connect(
+      () => setWsConnected(true),
+      () => setWsConnected(false)
+    );
     fetchCurrentUser().then(setUser);
     return () => disconnect();
   }, []);
 
   function handleSelectServer(serverId) {
     setSelectedServerId(serverId);
-    setActiveTextChannel(null);
-    setActiveVoiceChannel(null);
   }
 
   function handleSelectChannel(channel) {
     if (channel.type === "voice") {
-      // Voice channel: join immediately, keep text channel as is
-      setActiveVoiceChannel(channel);
+      if (activeVoiceChannel && activeVoiceChannel.id !== channel.id) {
+      }
+      if (activeVoiceChannel?.id !== channel.id) {
+        setActiveVoiceChannel(channel);
+      }
     } else {
-      // Text channel: switch text view, keep voice as is
       setActiveTextChannel(channel);
     }
   }
 
   function handleVoiceDisconnect() {
+    if (activeVoiceChannel) {
+    }
     setActiveVoiceChannel(null);
   }
 
   return (
     <div className="bg-bg-main h-screen w-full flex overflow-hidden">
-      <div className="z-10 shrink-0 h-full">
+      <div className="hidden md:block z-10 shrink-0 h-full transition-all duration-300">
         <ServerList onSelectServer={handleSelectServer} />
       </div>
 
-      <div className="shrink-0 h-full -ml-2 z-0">
+      <div className="hidden md:block shrink-0 h-full -ml-2 z-0 transition-all duration-300">
         <ChannelList
           visible={Boolean(selectedServerId)}
           serverId={selectedServerId}
           onSelectChannel={handleSelectChannel}
           activeVoiceChannelId={activeVoiceChannel?.id}
-          voiceUsers={activeVoiceChannel && user ? [user] : []}
+          activeTextChannelId={activeTextChannel?.id}
         />
       </div>
 
       <div className="flex-1 h-full overflow-hidden flex flex-col">
-        {/* Voice panel at top (if in a voice call) */}
         {activeVoiceChannel && (
           <VoiceChat
             channel={activeVoiceChannel}
             currentUser={user}
             onDisconnect={handleVoiceDisconnect}
+            wsConnected={wsConnected}
           />
         )}
 
-        {/* Text messages below */}
-        <MessageList channel={activeTextChannel} />
+        <MessageList channel={activeTextChannel} wsConnected={wsConnected} />
       </div>
     </div>
   );

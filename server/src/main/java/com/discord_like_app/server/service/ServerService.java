@@ -2,6 +2,7 @@ package com.discord_like_app.server.service;
 
 import com.discord_like_app.server.model.Member;
 import com.discord_like_app.server.model.Server;
+import com.discord_like_app.server.model.User;
 import com.discord_like_app.server.repository.MemberRepository;
 import com.discord_like_app.server.repository.ServerRepository;
 import com.discord_like_app.server.repository.UserRepository;
@@ -27,21 +28,24 @@ public class ServerService {
 
     @Transactional
     public Server createServer(String serverName, String ownerUid) {
+        User owner = null;
+        if (ownerUid != null && !ownerUid.isBlank()) {
+            owner = userRepository.findById(UUID.fromString(ownerUid)).orElse(null);
+        }
+
         Server server = Server.builder()
                 .serverName(serverName)
-                .ownerUid(ownerUid)
+                .owner(owner)
                 .build();
 
         Server savedServer = serverRepository.save(server);
 
-        if (ownerUid != null && !ownerUid.isBlank()) {
-            userRepository.findById(UUID.fromString(ownerUid)).ifPresent(user -> {
-                Member member = Member.builder()
-                        .user(user)
-                        .server(savedServer)
-                        .build();
-                memberRepository.save(member);
-            });
+        if (owner != null) {
+            Member member = Member.builder()
+                    .user(owner)
+                    .server(savedServer)
+                    .build();
+            memberRepository.save(member);
         }
 
         return savedServer;

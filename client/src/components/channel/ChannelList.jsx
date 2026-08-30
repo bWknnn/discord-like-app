@@ -1,20 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { FiPlus, FiHash, FiVolume2, FiX } from "react-icons/fi";
 import Channel from "./Channel";
 import Topbar from "./Topbar";
 import { channelFetch } from "../../api/channels";
-import { subscribeToServer, sendChannel } from "../../api/websocket";
+import { subscribeToServer, sendChannel, subscribeToVoiceParticipants, syncVoiceParticipants } from "../../api/websocket";
 
-export default function ChannelList({ visible, serverId, onSelectChannel, activeVoiceChannelId, voiceUsers }) {
-  const [active, setActive] = useState("");
+export default function ChannelList({ visible, serverId, onSelectChannel, activeVoiceChannelId, activeTextChannelId }) {
   const [addPanel, setAddPanel] = useState(false);
   const [type, setType] = useState("text");
   const [name, setName] = useState("");
   const [channels, setChannels] = useState([]);
+  const [voiceParticipants, setVoiceParticipants] = useState({});
+  const subscriptionsRef = useRef({});
 
   useEffect(() => {
     if (!visible || !serverId) return;
+
+    async function fetchChannels() {
+      try {
+        const fetchedChannels = await channelFetch(serverId);
+        setChannels(fetchedChannels);
+      } catch (error) {
+        console.error("Failed to fetch channels:", error);
+      }
+    }
 
     fetchChannels();
 
@@ -30,10 +40,36 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
     };
   }, [serverId, visible]);
 
-  if (!visible) return null;
 
-  const textChannels = channels.filter((channel) => channel.type === "text");
-  const voiceChannels = channels.filter((channel) => channel.type === "voice");
+  const textChannels = useMemo(() => channels.filter((channel) => channel.type === "text"), [channels]);
+  const voiceChannels = useMemo(() => channels.filter((channel) => channel.type === "voice"), [channels]);
+
+  useEffect(() => {
+    Object.values(subscriptionsRef.current).forEach((sub) => {
+      sub?.unsubscribe?.();
+    });
+    subscriptionsRef.current = {};
+
+    voiceChannels.forEach((channel) => {
+      const sub = subscribeToVoiceParticipants(channel.uid, (participants) => {
+        setVoiceParticipants((prev) => ({
+          ...prev,
+          [channel.uid]: participants,
+        }));
+      });
+      if (sub) {
+        subscriptionsRef.current[channel.uid] = sub;
+        syncVoiceParticipants(channel.uid);
+      }
+    });
+
+    return () => {
+      Object.values(subscriptionsRef.current).forEach((sub) => {
+        sub?.unsubscribe?.();
+      });
+      subscriptionsRef.current = {};
+    };
+  }, [voiceChannels]);
 
   function closePanel() {
     setAddPanel(false);
@@ -46,19 +82,14 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
     setName(formattedName);
   }
 
-  async function fetchChannels() {
-    try {
-      const channels = await channelFetch(serverId);
-      setChannels(channels);
-    } catch (error) {
-      console.error("Failed to fetch channels:", error);
-    }
-  }
+
 
   function createChannel() {
     sendChannel({ name, type, serverId });
     closePanel();
   }
+
+  if (!visible) return null;
 
   return (
     <>
@@ -68,9 +99,13 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
             className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
             onClick={closePanel}
           >
-            <div
+            <form
               className="w-96 bg-bg-card border border-accent/30 rounded-lg glow font-mono animate-in fade-in zoom-in-95 duration-150"
               onClick={(event) => event.stopPropagation()}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (name.trim()) createChannel();
+              }}
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-border-dark">
                 <span className="text-accent text-sm font-bold">
@@ -154,8 +189,7 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
                 </button>
 
                 <button
-                  type="button"
-                  onClick={createChannel}
+                  type="submit"
                   disabled={!name.trim()}
                   className={`px-3 py-1.5 text-sm rounded-md font-bold transition-colors ${name.trim()
                     ? "bg-accent text-bg-card hover:bg-accent/90 cursor-pointer"
@@ -165,12 +199,12 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
                   create
                 </button>
               </div>
-            </div>
+            </form>
           </div>,
           document.body,
         )}
 
-      <div className="w-64 bg-bg-card flex flex-col h-full border-r border-border-dark shrink-0">
+      <div className="w-48 md:w-56 lg:w-64 bg-bg-card flex flex-col h-full border-r border-border-dark shrink-0 transition-all duration-300">
         <div className="h-14 border-b border-border-dark px-4 flex items-center justify-between bg-bg-card/50">
           <span className="font-mono text-sm font-bold text-accent truncate">
             channels
@@ -195,9 +229,8 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
                   key={channel.uid}
                   name={channel.name}
                   type={channel.type}
-                  active={channel.uid === active}
+                  active={channel.uid === activeTextChannelId}
                   onClick={() => {
-                    setActive(channel.uid);
                     onSelectChannel?.({ id: channel.uid, type: channel.type, name: channel.name });
                   }}
                 />
@@ -219,10 +252,9 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
                       onSelectChannel?.({ id: channel.uid, type: channel.type, name: channel.name });
                     }}
                   />
-                  {/* Connected users under voice channel */}
-                  {activeVoiceChannelId === channel.uid && voiceUsers?.length > 0 && (
+                  {voiceParticipants[channel.uid]?.length > 0 && (
                     <div className="ml-5 flex flex-col gap-0.5 mt-0.5 select-none">
-                      {voiceUsers.map((u) => (
+                      {voiceParticipants[channel.uid].map((u) => (
                         <div key={u.uid} className="flex items-center gap-2 px-2 py-1 rounded-md">
                           <div className="w-5 h-5 rounded-full bg-accent text-bg-main flex items-center justify-center text-[10px] font-bold font-mono shrink-0">
                             {u.username?.[0]?.toUpperCase()}

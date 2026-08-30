@@ -5,7 +5,7 @@ import { currentUser as fetchCurrentUser } from "../../api/users";
 import { URL } from "../../api/constants";
 import { subscribe, sendMessage as sendWsMessage } from "../../api/websocket";
 
-export default function MessageList({ channel }) {
+export default function MessageList({ channel, wsConnected }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
@@ -27,6 +27,10 @@ export default function MessageList({ channel }) {
     })
       .then((res) => res.json())
       .then(setMessages);
+  }, [channel]);
+
+  useEffect(() => {
+    if (!channel || !wsConnected) return;
 
     const sub = subscribe(channel.id, (newMsg) => {
       setMessages((prev) => [...prev, newMsg]);
@@ -35,7 +39,7 @@ export default function MessageList({ channel }) {
     return () => {
       if (sub) sub.unsubscribe();
     };
-  }, [channel]);
+  }, [channel, wsConnected]);
 
   if (!channel || channel.type !== "text") {
     return null;
@@ -93,10 +97,9 @@ export default function MessageList({ channel }) {
             disabled={!input.trim()}
             aria-label="Send"
             className={`shrink-0 p-2 rounded-lg transition-all
-              ${
-                input.trim()
-                  ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
-                  : "text-text-light/20 cursor-not-allowed"
+              ${input.trim()
+                ? "bg-accent text-bg-main hover:bg-accent-hover cursor-pointer"
+                : "text-text-light/20 cursor-not-allowed"
               }`}
           >
             <FiSend size={16} />

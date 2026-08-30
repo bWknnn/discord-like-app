@@ -5,20 +5,23 @@ import { WS_URL } from "./constants";
 
 let stompClient = null;
 
-export function connect(onConnected) {
+export function connect(onConnected, onDisconnected) {
   if (stompClient?.connected) {
     if (onConnected) onConnected();
     return;
   }
 
   stompClient = new Client({
-    webSocketFactory: () => new SockJS(WS_URL),
+    webSocketFactory: () => new SockJS(WS_URL, null, { withCredentials: true }),
     reconnectDelay: 5000,
     onConnect: () => {
       console.log("WebSocket connected!");
       if (onConnected) onConnected();
     },
-
+    onWebSocketClose: () => {
+      console.log("WebSocket disconnected!");
+      if (onDisconnected) onDisconnected();
+    },
     onStompError: (frame) => {
       console.error("STOMP error:", frame.headers["message"]);
     },
@@ -66,4 +69,55 @@ export function disconnect() {
   if (stompClient) {
     stompClient.deactivate();
   }
+}
+
+export function subscribeToVoiceParticipants(channelUid, onParticipantsUpdate) {
+  if (!stompClient || !stompClient.connected) return null;
+
+  return stompClient.subscribe(`/channels/voice/${channelUid}`, (message) => {
+    const parsed = JSON.parse(message.body);
+    onParticipantsUpdate(parsed);
+  });
+}
+
+export function joinVoiceChannel(channelUid) {
+  if (!stompClient || !stompClient.connected) return;
+
+  stompClient.publish({
+    destination: `/send/voice/join/${channelUid}`,
+  });
+}
+
+export function leaveVoiceChannel(channelUid) {
+  if (!stompClient || !stompClient.connected) return;
+
+  stompClient.publish({
+    destination: `/send/voice/leave/${channelUid}`,
+  });
+}
+
+export function subscribeToWebRTCSignaling(userUid, onSignalReceived) {
+  if (!stompClient || !stompClient.connected) return null;
+
+  return stompClient.subscribe(`/channels/voice/signal/${userUid}`, (message) => {
+    const parsed = JSON.parse(message.body);
+    onSignalReceived(parsed);
+  });
+}
+
+export function sendWebRTCSignal(signalData) {
+  if (!stompClient || !stompClient.connected) return;
+
+  stompClient.publish({
+    destination: "/send/voice/signal",
+    body: JSON.stringify(signalData),
+  });
+}
+
+export function syncVoiceParticipants(channelUid) {
+  if (!stompClient || !stompClient.connected) return;
+
+  stompClient.publish({
+    destination: `/send/voice/sync/${channelUid}`,
+  });
 }

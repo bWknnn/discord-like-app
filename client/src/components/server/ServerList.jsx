@@ -115,7 +115,11 @@ export default function ServerList({ onSelectServer }) {
             }}
             className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
           >
-            <div
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                serverCreate();
+              }}
               onClick={(event) => event.stopPropagation()}
               className="bg-bg-card min-h-1/5 min-w-1/4 p-6 pb-0.5 rounded-md border border-border-dark flex flex-col animate-in fade-in zoom-in-95 duration-150"
             >
@@ -132,10 +136,6 @@ export default function ServerList({ onSelectServer }) {
                 value={serverName}
                 onChange={(event) => setServerName(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    serverCreate();
-                  }
-
                   if (event.key === "Escape") {
                     setCreate(false);
                     setServerName("");
@@ -148,14 +148,13 @@ export default function ServerList({ onSelectServer }) {
               />
 
               <button
-                type="button"
+                type="submit"
                 className="create-button"
-                onClick={serverCreate}
               >
                 <FiPlusCircle size={16} />
                 Create Server
               </button>
-            </div>
+            </form>
           </div>,
           document.body,
         )}
@@ -236,7 +235,7 @@ export default function ServerList({ onSelectServer }) {
           </div>
         </header>
 
-        <div className="w-64 bg-bg-card flex flex-col flex-1 min-h-0">
+        <div className="w-48 md:w-56 lg:w-64 bg-bg-card flex flex-col flex-1 min-h-0 transition-all duration-300">
           <button
             type="button"
             onClick={() => setOpen((currentOpen) => !currentOpen)}

@@ -25,8 +25,7 @@ public class MessageController {
 
     @GetMapping("/{channelUid}")
     public List<Message> getMessagesByChannel(@PathVariable String channelUid) {
-        List<Message> asda = messageService.getMessagesByChannel(channelUid);
-        return asda;
+        return messageService.getMessagesByChannel(channelUid);
     }
 
     @MessageMapping("/messages/{channelUid}")

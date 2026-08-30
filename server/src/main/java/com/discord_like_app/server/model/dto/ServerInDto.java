@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServerInDto {
-    private String serverName; // claud kalsın dedi
+    private String serverName;
 }
