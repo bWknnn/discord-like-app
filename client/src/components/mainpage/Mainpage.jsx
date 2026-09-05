@@ -10,6 +10,7 @@ export default function MainPage() {
   const [selectedServerId, setSelectedServerId] = useState(null);
   const [activeTextChannel, setActiveTextChannel] = useState(null);
   const [activeVoiceChannel, setActiveVoiceChannel] = useState(null);
+  const [voiceParticipants, setVoiceParticipants] = useState({});
   const [user, setUser] = useState(null);
   const [wsConnected, setWsConnected] = useState(false);
 
@@ -57,6 +58,8 @@ export default function MainPage() {
           onSelectChannel={handleSelectChannel}
           activeVoiceChannelId={activeVoiceChannel?.id}
           activeTextChannelId={activeTextChannel?.id}
+          voiceParticipants={voiceParticipants}
+          onVoiceParticipantsChange={setVoiceParticipants}
         />
       </div>
 
@@ -65,6 +68,7 @@ export default function MainPage() {
           <VoiceChat
             channel={activeVoiceChannel}
             currentUser={user}
+            participants={voiceParticipants[activeVoiceChannel.id] || []}
             onDisconnect={handleVoiceDisconnect}
             wsConnected={wsConnected}
           />

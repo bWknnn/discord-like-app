@@ -4,14 +4,21 @@ import { FiPlus, FiHash, FiVolume2, FiX } from "react-icons/fi";
 import Channel from "./Channel";
 import Topbar from "./Topbar";
 import { channelFetch } from "../../api/channels";
-import { subscribeToServer, sendChannel, subscribeToVoiceParticipants, syncVoiceParticipants } from "../../api/websocket";
+import { subscribeToServer, sendChannel, subscribeToVoiceParticipants } from "../../api/websocket";
 
-export default function ChannelList({ visible, serverId, onSelectChannel, activeVoiceChannelId, activeTextChannelId }) {
+export default function ChannelList({
+  visible,
+  serverId,
+  onSelectChannel,
+  activeVoiceChannelId,
+  activeTextChannelId,
+  voiceParticipants = {},
+  onVoiceParticipantsChange,
+}) {
   const [addPanel, setAddPanel] = useState(false);
   const [type, setType] = useState("text");
   const [name, setName] = useState("");
   const [channels, setChannels] = useState([]);
-  const [voiceParticipants, setVoiceParticipants] = useState({});
   const subscriptionsRef = useRef({});
 
   useEffect(() => {
@@ -45,31 +52,40 @@ export default function ChannelList({ visible, serverId, onSelectChannel, active
   const voiceChannels = useMemo(() => channels.filter((channel) => channel.type === "voice"), [channels]);
 
   useEffect(() => {
-    Object.values(subscriptionsRef.current).forEach((sub) => {
-      sub?.unsubscribe?.();
-    });
-    subscriptionsRef.current = {};
+    const currentChannelUids = new Set(voiceChannels.map((c) => c.uid));
 
-    voiceChannels.forEach((channel) => {
-      const sub = subscribeToVoiceParticipants(channel.uid, (participants) => {
-        setVoiceParticipants((prev) => ({
-          ...prev,
-          [channel.uid]: participants,
-        }));
-      });
-      if (sub) {
-        subscriptionsRef.current[channel.uid] = sub;
-        syncVoiceParticipants(channel.uid);
+    Object.keys(subscriptionsRef.current).forEach((uid) => {
+      if (!currentChannelUids.has(uid) && uid !== activeVoiceChannelId) {
+        subscriptionsRef.current[uid]?.unsubscribe?.();
+        delete subscriptionsRef.current[uid];
       }
     });
 
+    voiceChannels.forEach((channel) => {
+      if (!subscriptionsRef.current[channel.uid]) {
+        const sub = subscribeToVoiceParticipants(channel.uid, (participants) => {
+          onVoiceParticipantsChange?.((prev) => ({
+            ...prev,
+            [channel.uid]: participants,
+          }));
+        });
+        if (sub) {
+          subscriptionsRef.current[channel.uid] = sub;
+        }
+      }
+    });
+  }, [voiceChannels, activeVoiceChannelId, onVoiceParticipantsChange]);
+
+  useEffect(() => {
     return () => {
-      Object.values(subscriptionsRef.current).forEach((sub) => {
-        sub?.unsubscribe?.();
+      Object.keys(subscriptionsRef.current).forEach((uid) => {
+        if (uid !== activeVoiceChannelId) {
+          subscriptionsRef.current[uid]?.unsubscribe?.();
+          delete subscriptionsRef.current[uid];
+        }
       });
-      subscriptionsRef.current = {};
     };
-  }, [voiceChannels]);
+  }, [activeVoiceChannelId]);
 
   function closePanel() {
     setAddPanel(false);

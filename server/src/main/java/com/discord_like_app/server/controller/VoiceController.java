@@ -62,11 +62,4 @@ public class VoiceController {
                     message);
         }
     }
-
-    @MessageMapping("/voice/sync/{channelUid}")
-    public void syncVoiceChannel(@DestinationVariable UUID channelUid) {
-        messagingTemplate.convertAndSend(
-                "/channels/voice/" + channelUid,
-                voiceChatService.getUsersInChannel(channelUid).stream().map(UserOutDto::fromEntity).toList());
-    }
 }

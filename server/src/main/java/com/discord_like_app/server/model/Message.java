@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "messages")
+@Table(name = "messages", indexes = {
+    @Index(name = "idx_messages_channel_uid_created_at", columnList = "channel_uid, created_at ASC")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

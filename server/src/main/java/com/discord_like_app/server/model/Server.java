@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,14 +27,4 @@ public class Server {
     @JoinColumn(name = "owner_uid", nullable = false)
     @ToString.Exclude
     private User owner;
-
-    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @Builder.Default
-    private List<Channel> channels = new ArrayList<>();
-
-    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @Builder.Default
-    private List<Member> members = new ArrayList<>();
 }

@@ -9,7 +9,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
-import { subscribeToVoiceParticipants, joinVoiceChannel, leaveVoiceChannel, sendWebRTCSignal, syncVoiceParticipants } from "../../api/websocket";
+import { joinVoiceChannel, leaveVoiceChannel, sendWebRTCSignal } from "../../api/websocket";
 import { useWebRTC } from "../../hooks/useWebRTC";
 import ParticipantTile from "./ParticipantTile";
 
@@ -22,13 +22,12 @@ function formatDuration(seconds) {
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
-export default function VoiceChat({ channel, currentUser, onDisconnect, wsConnected }) {
+export default function VoiceChat({ channel, currentUser, participants = [], onDisconnect, wsConnected }) {
   const [muted, setMuted] = useState(false);
   const [cameraOn, setCameraOn] = useState(false);
   const [screenSharing, setScreenSharing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [page, setPage] = useState(0);
-  const [participants, setParticipants] = useState([]);
 
   useEffect(() => {
     setMuted(false);
@@ -58,18 +57,9 @@ export default function VoiceChat({ channel, currentUser, onDisconnect, wsConnec
   useEffect(() => {
     if (!channel?.id || !wsConnected) return;
 
-    const sub = subscribeToVoiceParticipants(channel.id, (users) => {
-      setParticipants(users);
-    });
-
-    const timer = setTimeout(() => {
-      joinVoiceChannel(channel.id);
-      syncVoiceParticipants(channel.id);
-    }, 100);
+    joinVoiceChannel(channel.id);
 
     return () => {
-      clearTimeout(timer);
-      sub?.unsubscribe?.();
       leaveVoiceChannel(channel.id);
     };
   }, [channel?.id, wsConnected]);

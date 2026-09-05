@@ -113,11 +113,3 @@ export function sendWebRTCSignal(signalData) {
     body: JSON.stringify(signalData),
   });
 }
-
-export function syncVoiceParticipants(channelUid) {
-  if (!stompClient || !stompClient.connected) return;
-
-  stompClient.publish({
-    destination: `/send/voice/sync/${channelUid}`,
-  });
-}
